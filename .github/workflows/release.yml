@@ -1,0 +1,232 @@
+name: Release
+
+# Push a tag such as v1.0.0 and this builds LCForge for every platform, smoke-tests every build, and
+# opens a DRAFT GitHub release with them attached. Nothing is public until you press Publish on the
+# draft. Run it from the Actions tab instead (Run workflow) to get the same builds as downloadable
+# artifacts, with no release made at all.
+#
+# Nothing here needs a secret: the token every workflow gets is enough to open a draft release.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # The Java inside the installers, and so the Java your solutions compile and run with. 21 is
+  # what LeetCode's own Java runs, so code that passes here passes there.
+  JAVA_VERSION: '21'
+  # The code editor, built into the installers so they work offline. Keep in step with MONACO in
+  # web/app.js, which is what a source checkout loads from the CDN.
+  MONACO_VERSION: '0.52.2'
+  # npm's published integrity for that exact tarball (registry.npmjs.org/monaco-editor/0.52.2,
+  # dist.integrity). A download that does not match it is never built into anything.
+  MONACO_SHA512: GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ==
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  jar:
+    name: Jar and extension
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Version
+        id: version
+        run: |
+          version=$(sed -n 's/.*String VERSION = "\([^"]*\)".*/\1/p' src/lcforge/Server.java)
+          extension=$(python3 -c "import json; print(json.load(open('extension/manifest.json'))['version'])")
+          echo "LCForge $version, extension $extension"
+          # The app reports its own version (Help -> About). A release whose tag says otherwise
+          # would be lying to everyone who installs it.
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match VERSION in src/lcforge/Server.java ($version). Bump one of them."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "extension=$extension" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch the code editor (Monaco), checked against its published hash
+        run: |
+          curl -fsSL --retry 3 -o monaco.tgz "https://registry.npmjs.org/monaco-editor/-/monaco-editor-$MONACO_VERSION.tgz"
+          got=$(openssl dgst -sha512 -binary monaco.tgz | base64 -w0)
+          if [ "$got" != "$MONACO_SHA512" ]; then
+            echo "::error::monaco.tgz does not match its published hash (got $got)"
+            exit 1
+          fi
+          mkdir monaco
+          tar -xzf monaco.tgz -C monaco
+
+      - name: Build the jar, editor included
+        run: bash build.sh --monaco monaco/package/min/vs
+
+      - name: Smoke-test the jar
+        run: python3 packaging/smoke.py --version "${{ steps.version.outputs.version }}" --expect-bundled-editor -- java -jar dist/lcforge.jar
+
+      - name: Zip the Chrome extension
+        run: |
+          mkdir -p ext
+          (cd extension && zip -qr "../ext/LCForge-chrome-extension-${{ steps.version.outputs.extension }}.zip" .)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: dist/lcforge.jar
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extension
+          path: ext/*.zip
+          if-no-files-found: error
+
+  package:
+    name: ${{ matrix.name }}
+    needs: jar
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Windows, os: windows-2025 }
+          - { name: macOS (Apple silicon), os: macos-15 }
+          - { name: macOS (Intel), os: macos-15-intel }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: jar
+          path: input
+
+      - name: Put WiX on the PATH (the .msi needs it)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $wix = Get-ChildItem "${env:ProgramFiles(x86)}\WiX Toolset v3*\bin" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($wix) { $wix.FullName | Out-File -Append -Encoding utf8 $env:GITHUB_PATH; "WiX: $($wix.FullName)" }
+          else { "WiX not found -- jpackage will say what it needs" }
+
+      - name: Build, smoke-test and package
+        run: bash packaging/package.sh input/lcforge.jar "${{ needs.jar.outputs.version }}" out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.os }}
+          path: out/*
+          if-no-files-found: error
+          compression-level: 0    # installers are compressed already
+
+  package-linux:
+    name: Linux
+    needs: jar
+    runs-on: ubuntu-24.04
+    # Built inside Ubuntu 22.04 on purpose. A .deb names the system libraries it depends on, and
+    # 24.04 renamed some (libasound2 became libasound2t64). Built here, the package names the old
+    # ones, which 24.04 and Debian 12 still answer to -- so one .deb installs on all of them.
+    container: ubuntu:22.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Tools for building a .deb
+        run: |
+          apt-get update -qq
+          # The X11, sound and font libraries are here only so jpackage can see which packages
+          # provide them, and list those as the .deb's dependencies.
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            ca-certificates git python3 fakeroot \
+            libasound2 libx11-6 libxext6 libxrender1 libxtst6 libxi6 libfreetype6 libfontconfig1
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: jar
+          path: input
+
+      - name: Build, smoke-test and package
+        run: bash packaging/package.sh input/lcforge.jar "${{ needs.jar.outputs.version }}" out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-linux
+          path: out/*
+          if-no-files-found: error
+          compression-level: 0
+
+  release:
+    name: Draft the GitHub release
+    if: github.ref_type == 'tag'
+    needs: [jar, package, package-linux]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write    # the only job that may write, and all it writes is a draft release
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+          merge-multiple: true
+
+      - name: Name the jar, add checksums
+        run: |
+          mv assets/lcforge.jar "assets/LCForge-${{ needs.jar.outputs.version }}.jar"
+          cd assets
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Release notes
+        run: |
+          v="${{ needs.jar.outputs.version }}"
+          # This version's section of CHANGELOG.md, then how to install.
+          awk -v v="$v" 'index($0, "## [" v "]") == 1 { on = 1; next } /^## / && on { exit } on' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "LCForge $v" > notes.md
+          echo >> notes.md
+          sed "s/{version}/$v/g" packaging/release-notes.md >> notes.md
+          cat notes.md
+
+      - name: Open the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="LCForge ${{ needs.jar.outputs.version }}"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            # A re-run after a fix: replace the files on the draft that already exists.
+            gh release upload "$GITHUB_REF_NAME" assets/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" assets/* --draft --verify-tag --title "$title" --notes-file notes.md
+          fi

@@ -1,0 +1,11 @@
+# Line endings: LF in every checkout, on every OS. The shell scripts break with CRLF, and GitHub's
+# Windows runners check out with CRLF unless told otherwise. PowerShell's own scripts keep CRLF.
+* text=auto eol=lf
+*.ps1 text eol=crlf
+
+# Never touched.
+*.png  binary
+*.ico  binary
+*.icns binary
+*.jar  binary
+*.zip  binary

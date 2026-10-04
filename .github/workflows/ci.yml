@@ -1,0 +1,49 @@
+name: CI
+
+# Every push and pull request: the test suites on all three operating systems, plus the oldest Java
+# LCForge supports, then the jar built and smoke-tested on each. The release workflow runs this
+# first too, so nothing ships that has not passed it.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }}, Java ${{ matrix.java }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-15]
+        java: ['21']
+        include:
+          - os: ubuntu-24.04
+            java: '17'          # the oldest Java LCForge supports
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Test suites
+        run: bash verify.sh
+
+      - name: Build the jar
+        run: bash build.sh
+
+      - name: Smoke-test the jar (start it, judge a problem, step through it)
+        run: |
+          # A Python that actually runs: on Windows "python3" can be a Store placeholder.
+          for py in python3 python; do "$py" -c "" 2>/dev/null && break; done
+          "$py" packaging/smoke.py -- java -jar dist/lcforge.jar

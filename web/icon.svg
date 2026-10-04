@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 26">
+  <!-- The ember, as an icon: the same flame path the app draws, in Forge's amber. Literal colours on
+       purpose — an icon sits in a tab strip or a taskbar, where no palette reaches it. -->
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2=".18" y2="1">
+      <stop offset="0" stop-color="#ffc35c"/>
+      <stop offset=".45" stop-color="#ffa116"/>
+      <stop offset="1" stop-color="#ff7b0f"/>
+    </linearGradient>
+    <radialGradient id="core" cx=".5" cy=".74" r=".68">
+      <stop offset="0" stop-color="#6b3300" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#ff8c00" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="12" cy="22.6" rx="7.2" ry="2.5" fill="#596273"/>
+  <path fill="url(#body)" d="M 12 2 C 15.5 7 19 9.2 19 13.2 A 7 7 0 0 1 5 13.2 C 5 9.6 7.5 8.4 9 5.6 C 9.8 8 10.6 8.8 11.4 9.4 C 11.9 7.6 11.6 4.8 12 2 Z"/>
+  <path fill="url(#core)" d="M 12 9 C 13.6 11.4 15 12.6 15 14.6 A 3 3 0 0 1 9 14.6 C 9 12.8 10.8 11.8 12 9 Z"/>
+  <circle cx="10" cy="14.5" r="1.2" fill="#24170a"/>
+  <circle cx="14" cy="14.5" r="1.2" fill="#24170a"/>
+  <circle cx="9.62" cy="14.08" r=".38" fill="#fff" opacity=".85"/>
+  <circle cx="13.62" cy="14.08" r=".38" fill="#fff" opacity=".85"/>
+</svg>

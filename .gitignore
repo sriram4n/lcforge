@@ -1,0 +1,10 @@
+# build output
+build/
+dist/
+
+# your data -- problems, solutions and history. Never published.
+data/
+workspace/
+.lock
+.port
+_site/

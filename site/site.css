@@ -1,0 +1,519 @@
+/* LCForge's website. Every colour is a palette variable from the app's own stylesheet (lifted into
+   ember/ember.css by build.sh), so any of the app's eighteen palettes repaints the whole page,
+   light ones included, and nothing here names a colour of its own. */
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;          /* the sticky bar must not cover what a link scrolls to */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .35s ease, color .35s ease;
+}
+/* The hero's glow and the Accepted sparks reach past the content on purpose; clip them at the
+   window's edge instead of letting them widen the page. clip, not hidden: no scroll container. */
+main { overflow-x: clip; }
+
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--accent-hi); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+/* Inline code only: the demo's <pre><code> is a different thing and styles itself. */
+:not(pre) > code {
+  font: .88em var(--mono);
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  padding: 1px 6px;
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
+.muted { color: var(--fg-faint); }
+
+.wrap {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+@media (min-width: 640px) { .wrap { padding-inline: 24px; } }
+
+h1, h2, h3 { margin: 0; line-height: 1.15; }
+h2 {
+  font-size: clamp(1.6rem, 1.1rem + 2vw, 2.3rem);
+  font-weight: 750;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+h3 { font-size: 1.06rem; font-weight: 650; }
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 16px; top: 12px; z-index: 100;
+  background: var(--accent); color: var(--accent-ink);
+  padding: 8px 14px; border-radius: 8px;
+}
+
+/* ---------- the bar ---------- */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 60px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--fg);
+  font-weight: 750;
+  font-size: 17px;
+  letter-spacing: -.01em;
+  text-decoration: none;
+}
+.brand:hover { color: var(--fg); }
+.brand-mark { width: 19px; height: 21px; fill: var(--accent); flex: none; }
+.brand.small { font-size: 15px; }
+.brand.small .brand-mark { width: 15px; height: 17px; }
+.nav-links { display: flex; gap: 22px; font-size: 15px; }
+.nav-links a { color: var(--fg-dim); text-decoration: none; }
+.nav-links a:hover { color: var(--fg); }
+@media (max-width: 480px) {
+  .nav-links { gap: 14px; font-size: 14px; }
+  .nav-links a[href="#features"] { display: none; }
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-3);
+  color: var(--fg);
+  font: 600 14.5px/1.2 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, transform .1s;
+}
+.btn:hover { background: var(--hover); border-color: var(--hover-line); color: var(--fg); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn.primary:hover { background: var(--accent-hi); color: var(--accent-ink); }
+.btn.ghost { background: transparent; }
+.btn.ghost:hover { background: var(--hover); }
+.btn.big { min-height: 48px; padding: 12px 22px; font-size: 16px; border-radius: 12px; }
+.btn.small { min-height: 32px; padding: 6px 13px; font-size: 13px; border-radius: 8px; }
+.btn[disabled] { opacity: .5; cursor: default; transform: none; }
+
+.link-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-top: 12px;
+  color: var(--accent);
+  font: 600 14px var(--sans);
+  cursor: pointer;
+}
+.link-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- hero ---------- */
+
+.hero {
+  position: relative;
+  isolation: isolate;              /* the glow stays behind the hero and nowhere else */
+  display: grid;
+  gap: 48px;
+  align-items: center;
+  padding-block: 64px 72px;
+}
+.hero > * { min-width: 0; }        /* or the code block's long lines would widen the whole page */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -40px -20vw 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 46% at 74% 46%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 72%),
+    radial-gradient(26% 34% at 33% 26%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 70%);
+}
+@media (min-width: 980px) {
+  .hero { grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr); gap: 56px; padding-block: 88px 96px; }
+}
+
+.eyebrow {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--tint-accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+h1 {
+  margin: 20px 0 18px;
+  font-size: clamp(2.15rem, 1.3rem + 3vw, 3.3rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -.028em;
+  text-wrap: balance;
+}
+.hl { color: var(--accent); }
+.lede { margin: 0; max-width: 34em; color: var(--fg-dim); font-size: 1.12rem; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.cta-note { margin: 14px 0 0; color: var(--fg-faint); font-size: 14px; }
+
+/* ---------- the demo ---------- */
+
+.demo {
+  position: relative;
+  margin: 0 0 30px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 40px 90px -36px var(--shadow), 0 2px 0 color-mix(in srgb, var(--fg) 3%, transparent) inset;
+}
+.demo-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 14px 14px 0 0;
+  background: var(--bg-3);
+}
+.demo-bar i { width: 10px; height: 10px; border-radius: 50%; background: color-mix(in srgb, var(--fg) 16%, var(--bg-3)); }
+.demo-bar span { margin-left: 10px; color: var(--fg-faint); font: 12.5px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.demo-editor {
+  position: relative;
+  background: var(--bg);
+  padding: 14px 0 18px;
+}
+.code {
+  margin: 0;
+  padding-right: 14px;
+  overflow-x: auto;
+  font: 13px/1.75 var(--mono);
+  font-variant-ligatures: none;    /* show != as typed: ligatures turn it into a symbol beginners do not type */
+  color: var(--fg);
+  counter-reset: ln;
+  tab-size: 4;
+}
+/* A grid, because a grid does not render text that is only white space -- and the newline between
+   one line's <span> and the next would otherwise draw a blank line under every line of code. */
+.code code { display: grid; }
+.code b { font-weight: inherit; }
+.code .k { color: var(--syn-key); }
+.code .t { color: var(--syn-type); }
+.code .f { color: var(--syn-fn); }
+.code .n { color: var(--syn-num); }
+.ln {
+  display: block;
+  position: relative;
+  padding-left: 50px;
+  counter-increment: ln;
+  transition: background-color .18s;
+}
+.ln::before {
+  content: counter(ln);
+  position: absolute;
+  left: 0;
+  width: 34px;
+  text-align: right;
+  color: var(--fg-faint);
+}
+.ln.cur { background: color-mix(in srgb, var(--accent) 14%, transparent); box-shadow: inset 3px 0 var(--accent); }
+.ln.cur::before { color: var(--accent); }
+
+/* The ember sits on the editor's bottom-right corner, as it does in the app. */
+.demo-perch {
+  position: absolute;
+  right: 14px;
+  bottom: 8px;
+  line-height: 0;
+}
+.demo-perch .ember-wrap, .mini-perch .ember-wrap { cursor: pointer; filter: drop-shadow(0 3px 8px var(--shadow)); }
+
+.demo-console {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 14px 14px;
+}
+.demo-out {
+  flex: 1 1 260px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  min-height: 2.6em;
+  color: var(--fg-dim);
+  font: 13px/1.45 var(--mono);
+}
+.demo-out .v {
+  display: inline-flex;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  color: var(--fg);
+}
+.demo-out .v.changed { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+.demo-out .v i { font-style: normal; color: var(--fg-faint); }
+.demo-out .verdict { font: 700 15px var(--sans); }
+.demo-out .verdict.ok { color: var(--pass); }
+.demo-out .paid { color: var(--accent); font-weight: 600; }
+.demo-actions { display: flex; gap: 8px; }
+.demo-hint {
+  position: absolute;
+  right: 4px;
+  bottom: -28px;
+  color: var(--fg-faint);
+  font-size: 13px;
+}
+
+/* Accepted: sparks thrown from the ember across the code -- the app's own burst. */
+.demo-perch > .burst {
+  position: absolute;
+  right: 26px;
+  bottom: 22px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.burst .bit {
+  position: absolute; left: -3px; top: -3px;
+  width: 6px; height: 6px;
+  border-radius: 1.5px;
+  opacity: 0;
+}
+.burst .bit.b0 { background: var(--accent); }
+.burst .bit.b1 { background: var(--pass); border-radius: 50%; }
+.burst .bit.b2 { background: var(--warn); width: 4px; height: 9px; }
+.burst .bit.b3 { background: color-mix(in srgb, var(--accent) 50%, var(--fg)); width: 5px; height: 5px; border-radius: 50%; }
+
+@media (max-width: 560px) {
+  .code { font-size: 11.5px; }
+  .ln { padding-left: 38px; }
+  .ln::before { width: 26px; }
+  .demo-actions { width: 100%; }
+  .demo-actions .btn { flex: 1; }
+}
+
+/* ---------- sections ---------- */
+
+.features, .how, .download, .privacy, .faq { padding-block: 56px; }
+@media (min-width: 980px) { .features, .how, .download, .privacy, .faq { padding-block: 72px; } }
+.features h2, .how h2, .download h2, .faq h2 { margin-bottom: 28px; max-width: 24em; }
+
+.card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+}
+.feat h3 { margin: 14px 0 6px; }
+.feat p { margin: 0; color: var(--fg-dim); font-size: 15px; }
+.ico {
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--tint-accent);
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mini-perch { height: 40px; display: flex; align-items: flex-end; }
+
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+/* The button carries the page's colours, for its ring; the chip inside carries the palette it
+   offers -- data-palette re-declares every variable beneath it, so it paints itself. */
+.sw {
+  padding: 3px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+}
+.sw:hover { border-color: var(--hover-line); }
+.sw[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+.sw i {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--bg) 0 52%, var(--accent) 52% 76%, var(--pass) 76%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--fg) 12%, transparent) inset;
+}
+.sw-system {
+  padding: 0 10px;
+  min-height: 36px;
+  color: var(--fg-dim);
+  font: 600 13px var(--sans);
+  line-height: 1;
+}
+
+.steps {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+.steps li { padding: 4px 4px 0 0; }
+.steps .num {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--tint-accent);
+  color: var(--accent);
+  font-weight: 750;
+}
+.steps h3 { margin: 14px 0 6px; }
+.steps p { margin: 0; color: var(--fg-dim); font-size: 15px; }
+
+/* ---------- download ---------- */
+
+.download .sub { margin: -16px 0 24px; color: var(--fg-dim); }
+.dl-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+.dl { display: flex; flex-direction: column; gap: 10px; }
+.dl h3 { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; }
+.dl p { margin: -4px 0 6px; font-size: 14px; }
+.dl .btn { width: 100%; }
+.dl .alt { color: var(--fg-dim); font-size: 14px; text-align: center; }
+.dl .alt:hover { color: var(--fg); }
+.dl .size { opacity: .72; font-weight: 500; }
+.dl.mine { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+.dl.mine h3::after {
+  content: "Your system";
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--tint-accent);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+}
+.dl-more {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+}
+.dl-more p { margin: 6px 0 0; color: var(--fg-dim); font-size: 15px; }
+.note { margin: 20px 0 0; color: var(--fg-faint); font-size: 14px; }
+
+/* ---------- privacy ---------- */
+
+.privacy-card {
+  padding: clamp(22px, 4vw, 40px);
+  background:
+    radial-gradient(80% 120% at 100% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
+    var(--bg-2);
+}
+.privacy-card p { color: var(--fg-dim); max-width: 46em; }
+.privacy-card h2 + p { margin-top: 14px; }
+.privacy-card ul { margin: 0; padding-left: 1.2em; color: var(--fg-dim); max-width: 46em; }
+.privacy-card li { margin: 6px 0; }
+.privacy-card li::marker { color: var(--accent); }
+
+/* ---------- faq ---------- */
+
+.faq details { border-bottom: 1px solid var(--line); max-width: 52em; }
+.faq summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  font-weight: 650;
+  font-size: 1.04rem;
+  list-style: none;
+  cursor: pointer;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "+";
+  flex: none;
+  color: var(--fg-faint);
+  font: 400 22px/1 var(--sans);
+  transition: transform .2s;
+}
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq summary:hover { color: var(--accent-hi); }
+.faq details p { margin: 0 0 16px; color: var(--fg-dim); max-width: 46em; }
+
+/* ---------- footer ---------- */
+
+.foot { border-top: 1px solid var(--line); padding: 28px 0 44px; font-size: 14px; }
+.foot-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.foot-links { display: flex; gap: 18px; }
+.foot-links a { color: var(--fg-dim); text-decoration: none; }
+.foot-links a:hover { color: var(--fg); }
+
+/* ---------- the privacy page ---------- */
+
+.doc { max-width: 760px; padding-block: 48px 72px; }
+.doc h1 { font-size: clamp(1.9rem, 1.3rem + 2vw, 2.6rem); margin: 0 0 8px; }
+.doc h2 { font-size: 1.3rem; margin: 36px 0 10px; }
+.doc p, .doc li { color: var(--fg-dim); }
+.doc .updated { color: var(--fg-faint); margin: 0 0 28px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; }
+}

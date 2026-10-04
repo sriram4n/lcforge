@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy — LCForge</title>
+<meta name="description" content="What LCForge, its Chrome extension and this website do with your data: nothing leaves your computer.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https://api.github.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="ember/ember.css">
+<link rel="stylesheet" href="site.css">
+<script src="theme.js"></script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="./" aria-label="LCForge home">
+      <svg class="brand-mark" viewBox="0 0 24 26" aria-hidden="true"><path d="M 12 2 C 15.5 7 19 9.2 19 13.2 A 7 7 0 0 1 5 13.2 C 5 9.6 7.5 8.4 9 5.6 C 9.8 8 10.6 8.8 11.4 9.4 C 11.9 7.6 11.6 4.8 12 2 Z"/></svg>
+      LCForge
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="./#download">Download</a>
+      <a href="./#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap doc">
+  <h1>Privacy</h1>
+  <p class="updated">This covers the LCForge app, the LCForge Chrome extension and this website.</p>
+
+  <h2>The short version</h2>
+  <p>LCForge collects nothing. It has no account, no analytics and no server of its own. Your problems, your code and your history stay on your computer, and nothing about you is sent to us or to anyone else.</p>
+
+  <h2>The app</h2>
+  <p>LCForge runs on your computer and keeps everything it saves — the problems you import, your solutions, your run history and your ember — in one folder there. Help → About in the app shows where. It talks only to itself, on a port that accepts connections from your own machine and no other.</p>
+  <p>Two things can come from the internet, and only <em>to</em> you:</p>
+  <ul>
+    <li>When a problem's statement includes a diagram, the diagram is loaded from LeetCode's own servers, the same as on LeetCode. Those requests carry no referrer.</li>
+    <li>If you run the bare <code>.jar</code>, the code editor (Monaco) is loaded from the cdnjs content network. The installers carry their own copy and skip this.</li>
+  </ul>
+  <p>Your code is compiled and run on your own computer. It is never uploaded.</p>
+
+  <h2>The Chrome extension</h2>
+  <p>The extension runs only on LeetCode problem pages. When you press its ⚡ button, it reads the problem you are viewing — its statement, examples, code template and method signature — through the same request LeetCode's own page makes, and hands it to the LCForge app on your computer (an address that starts <code>http://127.0.0.1</code>). That is all it does.</p>
+  <ul>
+    <li>It sends nothing anywhere but the LCForge app on your own machine.</li>
+    <li>It does not read your cookies, your account details, your submissions or your browsing history.</li>
+    <li>It stores nothing, and does nothing until you press the button.</li>
+  </ul>
+
+  <h2>This website</h2>
+  <p>This site is static pages, hosted by GitHub Pages. It sets no cookies and runs no analytics or trackers. To point the download buttons at the newest version, your browser asks GitHub's public API which release is the latest; GitHub's own <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a> covers that request, and the page that served you, as it does any visit to a GitHub Pages site. If you pick a theme here, it is remembered in your own browser's storage and nowhere else.</p>
+
+  <h2>Questions</h2>
+  <p>LCForge is open source, so every claim on this page can be checked against its code. If something here is unclear, open an issue on the project's <a href="https://github.com/__GITHUB_REPOSITORY__" data-repo-link>GitHub page</a>.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span class="muted">Not affiliated with LeetCode. LeetCode is a trademark of its owner.</span>
+    <span class="foot-links"><a href="./">Home</a></span>
+  </div>
+</footer>
+</body>
+</html>

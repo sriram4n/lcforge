@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LCForge — debug your LeetCode solutions, one line at a time</title>
+<meta name="description" content="A free desktop app for solving LeetCode problems in Java. Run and judge your code offline, then step through it line by line with a real debugger. Your code never leaves your machine.">
+<!-- No inline script or style anywhere on this site, and the only outside address it ever talks to
+     is GitHub's API, to find the newest release. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https://api.github.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="dark light">
+<meta property="og:title" content="LCForge — debug your LeetCode solutions, one line at a time">
+<meta property="og:description" content="Run, judge and step through your Java solutions on your own machine. Free, offline, open source.">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="ember/ember.css">
+<link rel="stylesheet" href="site.css">
+<script src="theme.js"></script>
+<script type="module" src="site.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="./" aria-label="LCForge home">
+      <svg class="brand-mark" viewBox="0 0 24 26" aria-hidden="true"><path d="M 12 2 C 15.5 7 19 9.2 19 13.2 A 7 7 0 0 1 5 13.2 C 5 9.6 7.5 8.4 9 5.6 C 9.8 8 10.6 8.8 11.4 9.4 C 11.9 7.6 11.6 4.8 12 2 Z"/></svg>
+      LCForge
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/__GITHUB_REPOSITORY__" data-repo-link>GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero wrap">
+  <div class="hero-copy">
+    <p class="eyebrow">Free · open source · works offline</p>
+    <h1>Debug your LeetCode solutions, <span class="hl">one line at a time.</span></h1>
+    <p class="lede">LCForge is a desktop app for solving LeetCode problems in Java. Run and judge your code on your own machine, then step through whatever fails — every line, every variable — with a real debugger.</p>
+    <div class="cta">
+      <a class="btn primary big" id="cta-download" href="#download">Download LCForge</a>
+      <a class="btn ghost big" href="#how">How it works</a>
+    </div>
+    <p class="cta-note" id="cta-note">Windows, macOS and Linux · Java included</p>
+  </div>
+
+  <figure class="demo" id="demo" aria-label="A working miniature of LCForge: step through the code, run it, submit it">
+    <div class="demo-bar" aria-hidden="true"><i></i><i></i><i></i><span>Solution.java — Two Sum</span></div>
+    <div class="demo-editor">
+      <pre class="code" id="demo-code"><code><span class="ln"><b class="k">class</b> <b class="t">Solution</b> {</span>
+<span class="ln">    <b class="k">public int</b>[] <b class="f">twoSum</b>(<b class="k">int</b>[] nums, <b class="k">int</b> target) {</span>
+<span class="ln">        <b class="t">Map</b>&lt;<b class="t">Integer</b>, <b class="t">Integer</b>&gt; seen = <b class="k">new</b> <b class="t">HashMap</b>&lt;&gt;();</span>
+<span class="ln">        <b class="k">for</b> (<b class="k">int</b> i = <b class="n">0</b>; i &lt; nums.length; i++) {</span>
+<span class="ln">            <b class="t">Integer</b> j = seen.<b class="f">get</b>(target - nums[i]);</span>
+<span class="ln">            <b class="k">if</b> (j != <b class="k">null</b>) <b class="k">return new int</b>[] { j, i };</span>
+<span class="ln">            seen.<b class="f">put</b>(nums[i], i);</span>
+<span class="ln">        }</span>
+<span class="ln">        <b class="k">return new int</b>[<b class="n">0</b>];</span>
+<span class="ln">    }</span>
+<span class="ln">}</span></code></pre>
+      <div class="demo-perch" id="demo-perch"></div>
+    </div>
+    <div class="demo-console">
+      <div class="demo-out" id="demo-out" aria-live="polite">
+        <span class="muted">nums = [2,7,11,15], target = 9 — press <b>Step</b> to walk through it.</span>
+      </div>
+      <div class="demo-actions">
+        <button type="button" class="btn small" id="demo-step">Step</button>
+        <button type="button" class="btn small" id="demo-run">Run</button>
+        <button type="button" class="btn small primary" id="demo-submit">Submit</button>
+      </div>
+    </div>
+    <figcaption class="demo-hint">This one works. Poke the ember, too.</figcaption>
+  </figure>
+</section>
+
+<section class="wrap features" id="features">
+  <h2>Everything LeetCode's editor does — plus the part it can't.</h2>
+  <div class="grid">
+    <article class="card feat">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16"/><path d="M9 5.5 19 12 9 18.5z"/></svg>
+      <h3>A real debugger</h3>
+      <p>Not print statements. LCForge runs your solution under the JVM's own debugger and records every step, so you can scrub back and forth and watch your arrays, maps, lists and trees change.</p>
+    </article>
+    <article class="card feat">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.6 2.6L16.2 9.5"/></svg>
+      <h3>Judged like LeetCode</h3>
+      <p><b>Run</b> tries the case you're looking at. <b>Submit</b> runs them all and says Accepted, Wrong Answer or Time Limit Exceeded — with every case's runtime side by side.</p>
+    </article>
+    <article class="card feat">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/></svg>
+      <h3>One click from LeetCode</h3>
+      <p>The Chrome extension puts a ⚡ on every problem page. Press it and the statement, the examples and the exact method signature land in LCForge, ready to solve.</p>
+    </article>
+    <article class="card feat feat-ember">
+      <div class="mini-perch" id="mini-perch"></div>
+      <h3>An ember that lives on progress</h3>
+      <p>The first time you solve a problem, it pays you Sparks to keep your ember fed. It dims while you're away. It never dies.</p>
+      <button type="button" class="link-btn" id="try-hat">Try something on</button>
+    </article>
+    <article class="card feat">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg>
+      <h3>Yours, and offline</h3>
+      <p>No account, no cloud, no telemetry. Your problems, solutions and history are plain files in one folder on your computer.</p>
+    </article>
+    <article class="card feat">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 1 9-9c0 2.5-2 4-4.5 4H15a2 2 0 0 0-1.5 3.3c.5.6.2 1.7-1.5 1.7z"/><circle cx="7.8" cy="11" r="1.2"/><circle cx="11" cy="7.4" r="1.2"/><circle cx="15.6" cy="8.4" r="1.2"/></svg>
+      <h3>Eighteen themes</h3>
+      <p>Forge, Dracula, Tokyo Night, Catppuccin, Solarized, GitHub, Paper and more — or let it follow your system. Try one on this page:</p>
+      <div class="swatches" id="swatches" role="group" aria-label="Try a theme"></div>
+    </article>
+  </div>
+</section>
+
+<section class="wrap how" id="how">
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><span class="num">1</span><h3>Install it</h3><p>Download LCForge for your computer. Java comes built in — there's nothing else to set up.</p></li>
+    <li><span class="num">2</span><h3>Bring a problem</h3><p>Press ⚡ on any LeetCode problem with the extension, or paste a problem in by hand.</p></li>
+    <li><span class="num">3</span><h3>Solve, then step</h3><p>Write Java, Run, Submit. When a case fails, step through it and see exactly where it went wrong.</p></li>
+  </ol>
+</section>
+
+<section class="wrap download" id="download">
+  <h2>Download</h2>
+  <p class="sub" id="dl-status">Free, for Windows, macOS and Linux.</p>
+  <div class="dl-grid">
+    <article class="card dl" data-os="windows">
+      <h3>Windows</h3>
+      <p class="muted">Windows 10 and 11, 64-bit</p>
+      <a class="btn primary" data-asset="windows-x64.msi" href="#download">Installer (.msi)</a>
+      <a class="alt" data-asset="windows-x64-portable.zip" href="#download">Portable .zip — no install needed</a>
+    </article>
+    <article class="card dl" data-os="mac">
+      <h3>macOS</h3>
+      <p class="muted">macOS 12 or newer</p>
+      <a class="btn primary" data-asset="macos-arm64.dmg" href="#download">Apple silicon (.dmg)</a>
+      <a class="alt" data-asset="macos-x64.dmg" href="#download">Intel Mac (.dmg)</a>
+    </article>
+    <article class="card dl" data-os="linux">
+      <h3>Linux</h3>
+      <p class="muted">64-bit</p>
+      <a class="btn primary" data-asset="linux-x64.deb" href="#download">Ubuntu, Debian (.deb)</a>
+      <a class="alt" data-asset="linux-x64.tar.gz" href="#download">Any distribution (.tar.gz)</a>
+    </article>
+  </div>
+  <div class="dl-more">
+    <div class="card">
+      <h3>The Chrome extension</h3>
+      <p>Adds the ⚡ button to LeetCode. <a data-asset="chrome-extension" href="#download">Download it</a>, unzip it, open <code>chrome://extensions</code>, switch on Developer mode and choose <b>Load unpacked</b>.</p>
+    </div>
+    <div class="card">
+      <h3>Already have Java 17+?</h3>
+      <p>Take <a data-asset="jar" href="#download">the jar</a> and run <code>java -jar LCForge.jar</code> — the same app, a fraction of the size.</p>
+    </div>
+  </div>
+  <p class="note">The first launch asks for one extra click, because these builds aren't code-signed: <a href="#faq-unsigned">here's what to press</a>.</p>
+</section>
+
+<section class="wrap privacy" id="privacy">
+  <div class="card privacy-card">
+    <h2>Your code never leaves your machine.</h2>
+    <p>LCForge runs entirely on your computer: there's no account, no server and no telemetry. Here is everything it — or this page — ever fetches from the internet:</p>
+    <ul>
+      <li>problem diagrams, straight from LeetCode's own servers, when a problem has them;</li>
+      <li>the code editor, from a CDN — only if you run the bare jar, since the installers carry their own;</li>
+      <li>and on this page, one question to GitHub: which version is the newest, so these buttons point at it.</li>
+    </ul>
+    <p><a href="privacy.html">Read the full privacy policy</a></p>
+  </div>
+</section>
+
+<section class="wrap faq" id="faq">
+  <h2>Questions</h2>
+  <details>
+    <summary>Is it really free?</summary>
+    <p>Yes. LCForge is free and open source, with no paid tier and nothing to sign up for. The source is on <a href="https://github.com/__GITHUB_REPOSITORY__" data-repo-link>GitHub</a>.</p>
+  </details>
+  <details>
+    <summary>Do I need to install Java?</summary>
+    <p>No. The installers carry their own Java, trimmed to what LCForge uses. Only the bare jar needs a Java 17 or newer already on your machine.</p>
+  </details>
+  <details>
+    <summary>Which languages does it support?</summary>
+    <p>Java, and only Java. The debugger is built on the JVM's own debugging interface, which is what lets it show you every step, so Java is the language it can do properly.</p>
+  </details>
+  <details id="faq-unsigned">
+    <summary>Why does my computer warn me the first time I open it?</summary>
+    <p>Because the builds aren't code-signed — a certificate that costs a yearly fee. Nothing is wrong with the app; the warning just means "this publisher hasn't paid to be recognised". You only have to get past it once:</p>
+    <p><b>Windows:</b> on "Windows protected your PC", choose <b>More info</b>, then <b>Run anyway</b>.<br><b>macOS:</b> open <b>System Settings → Privacy &amp; Security</b>, scroll down, and choose <b>Open Anyway</b> next to LCForge.</p>
+  </details>
+  <details>
+    <summary>Does it work with Premium problems?</summary>
+    <p>It works with whatever your browser is showing you. The extension reads the problem you're looking at, through the same request LeetCode's own page makes — so if you can see a problem, LCForge can import it, and if you can't, it can't. It never unlocks anything.</p>
+  </details>
+  <details>
+    <summary>Does it need my LeetCode account?</summary>
+    <p>No. LCForge never signs in to anything, and the extension never sends your cookies or account details anywhere — it only hands the problem on the page to the app on your own computer.</p>
+  </details>
+  <details>
+    <summary>Where is my work kept, and how do I remove it?</summary>
+    <p>In one folder: <code>%LOCALAPPDATA%\LCForge</code> on Windows, <code>~/Library/Application Support/LCForge</code> on a Mac and <code>~/.local/share/lcforge</code> on Linux. Help → About in the app shows the exact path. Uninstalling leaves your work in place; delete that folder to remove it too.</p>
+  </details>
+  <details>
+    <summary>Is LCForge part of LeetCode?</summary>
+    <p>No. It's an independent project, not affiliated with, endorsed by or connected to LeetCode.</p>
+  </details>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span class="brand small">
+      <svg class="brand-mark" viewBox="0 0 24 26" aria-hidden="true"><path d="M 12 2 C 15.5 7 19 9.2 19 13.2 A 7 7 0 0 1 5 13.2 C 5 9.6 7.5 8.4 9 5.6 C 9.8 8 10.6 8.8 11.4 9.4 C 11.9 7.6 11.6 4.8 12 2 Z"/></svg>
+      LCForge
+    </span>
+    <span class="muted">Not affiliated with LeetCode. LeetCode is a trademark of its owner.</span>
+    <span class="foot-links"><a href="privacy.html">Privacy</a> <a href="https://github.com/__GITHUB_REPOSITORY__" data-repo-link>GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

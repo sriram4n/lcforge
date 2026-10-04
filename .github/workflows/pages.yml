@@ -1,0 +1,49 @@
+name: Website
+
+# Publishes site/ to GitHub Pages whenever it -- or the ember it borrows from web/ -- changes.
+# One-time setup in the repository: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+# The download buttons find the newest release by themselves, so publishing a release needs no
+# redeploy here.
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'site/**'
+      - 'web/pet.js'
+      - 'web/svg.js'
+      - 'web/dom.js'
+      - 'web/styles.css'
+      - 'web/icon.svg'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble the site (the ember and palettes come from web/)
+        run: bash site/build.sh _site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

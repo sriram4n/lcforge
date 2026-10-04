@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCForge</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <meta name="description" content="LCForge — debug LeetCode-style problems in Java, locally: run, submit and step through your code line by line.">
+  <script src="/boot.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#/" aria-label="LCForge — library">
+    <!-- The ember's silhouette, in whatever the palette's accent is. -->
+    <svg class="brand-mark" viewBox="0 0 24 26" aria-hidden="true"><path d="M 12 2 C 15.5 7 19 9.2 19 13.2 A 7 7 0 0 1 5 13.2 C 5 9.6 7.5 8.4 9 5.6 C 9.8 8 10.6 8.8 11.4 9.4 C 11.9 7.6 11.6 4.8 12 2 Z"/></svg>
+    LCForge
+  </a>
+  <nav class="crumbs" id="crumbs"></nav>
+  <div class="spacer"></div>
+  <div class="topbar-actions" id="topbar-actions"></div>
+  <!-- Both outside #topbar-actions, which every view clears when it renders. -->
+  <div id="streak-slot"></div>
+  <div id="palette-slot"></div>
+  <div id="help-slot"></div>
+</header>
+
+<main id="app">
+  <div class="loading">Loading&hellip;</div>
+</main>
+
+<div id="toast-host" class="toast-host"></div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>

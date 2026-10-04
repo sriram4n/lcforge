@@ -1,0 +1,2555 @@
+/* LCForge — local LeetCode debugger. Dark by default; the editor is the centre of gravity. */
+
+/* @palettes:begin -- from here to @palettes:end is every palette plus what is mixed from them. The
+   website's build lifts exactly this span, so its theme demo paints with the real colours. */
+/* ---------- palettes ----------
+ *
+ * A palette declares fourteen colours and six syntax colours; everything else in the stylesheet is
+ * mixed from those, so adding a palette means adding one block and nothing else. `--monaco-base`
+ * tells the editor whether it is working light or dark, and `palette.js` builds the matching Monaco
+ * theme by reading these same variables back out — so the colours live in exactly one place.
+ *
+ * The blocks are keyed on the attribute alone rather than on `:root[data-palette]`, so that stamping
+ * `data-palette` on any element re-declares the whole palette inside it. That is what lets the
+ * picker show a real miniature of a palette you are not currently using — same CSS, same colours,
+ * no second copy of them in JavaScript to fall out of sync.
+ */
+
+:root,
+[data-palette="forge"] {                  /* Forge — amber on near-black. The original. */
+  --bg:        #0e1116;
+  --bg-2:      #151a21;
+  --bg-3:      #1c2230;
+  --line:      #262d3a;
+  --line-soft: #1e2530;
+  --fg:        #e3e8ef;
+  --fg-dim:    #96a1b0;
+  --fg-faint:  #64707f;
+
+  --accent:    #ffa116;   /* LeetCode's amber */
+  --accent-ink:#17120a;   /* text printed on top of the accent */
+  --pass:      #38d39f;
+  --fail:      #ff5c5c;
+  --warn:      #ffc93c;
+  --info:      #5aa9ff;
+  --shadow:    rgba(0,0,0,.5);
+
+  --syn-key:   #569cd6;
+  --syn-str:   #ce9178;
+  --syn-num:   #b5cea8;
+  --syn-com:   #6a7d8c;
+  --syn-type:  #4ec9b0;
+  --syn-fn:    #dcdcaa;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="midnight"] {          /* cool indigo, easiest on the eyes after dark */
+  --bg:        #0b0f1a;
+  --bg-2:      #121829;
+  --bg-3:      #1a2238;
+  --line:      #26304a;
+  --line-soft: #1b2438;
+  --fg:        #dfe6f5;
+  --fg-dim:    #93a0bd;
+  --fg-faint:  #5f6b88;
+
+  --accent:    #7aa2f7;
+  --accent-ink:#0b0f1a;
+  --pass:      #9ece6a;
+  --fail:      #f7768e;
+  --warn:      #e0af68;
+  --info:      #7dcfff;
+  --shadow:    rgba(0,0,0,.55);
+
+  --syn-key:   #bb9af7;
+  --syn-str:   #9ece6a;
+  --syn-num:   #ff9e64;
+  --syn-com:   #565f89;
+  --syn-type:  #2ac3de;
+  --syn-fn:    #7aa2f7;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="nord"] {              /* muted arctic; low contrast, low fatigue */
+  --bg:        #2e3440;
+  --bg-2:      #343b4a;
+  --bg-3:      #3b4252;
+  --line:      #4c566a;
+  --line-soft: #3b4252;
+  --fg:        #eceff4;
+  --fg-dim:    #c3ccd9;
+  --fg-faint:  #7b88a1;
+
+  --accent:    #88c0d0;
+  --accent-ink:#2e3440;
+  --pass:      #a3be8c;
+  --fail:      #c8737b;   /* Aurora red, one step lighter: the stock #bf616a is 2.7:1 on a panel */
+  --warn:      #ebcb8b;
+  --info:      #81a1c1;
+  --shadow:    rgba(0,0,0,.45);
+
+  --syn-key:   #81a1c1;
+  --syn-str:   #a3be8c;
+  --syn-num:   #b48ead;
+  --syn-com:   #616e88;
+  --syn-type:  #8fbcbb;
+  --syn-fn:    #88c0d0;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="gruvbox"] {           /* warm retro; the one that reads like paper at night */
+  --bg:        #1d2021;
+  --bg-2:      #282828;
+  --bg-3:      #32302f;
+  --line:      #504945;
+  --line-soft: #3c3836;
+  --fg:        #ebdbb2;
+  --fg-dim:    #bdae93;
+  --fg-faint:  #928374;
+
+  --accent:    #fabd2f;
+  --accent-ink:#1d2021;
+  --pass:      #b8bb26;
+  --fail:      #fb4934;
+  --warn:      #fe8019;
+  --info:      #83a598;
+  --shadow:    rgba(0,0,0,.5);
+
+  --syn-key:   #fb4934;
+  --syn-str:   #b8bb26;
+  --syn-num:   #d3869b;
+  --syn-com:   #928374;
+  --syn-type:  #fabd2f;
+  --syn-fn:    #8ec07c;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="github"] {            /* GitHub Dark — the one your code already lives in */
+  --bg:        #0d1117;
+  --bg-2:      #161b22;
+  --bg-3:      #21262d;
+  --line:      #30363d;
+  --line-soft: #21262d;
+  --fg:        #e6edf3;
+  --fg-dim:    #9198a1;
+  --fg-faint:  #6e7681;
+
+  --accent:    #58a6ff;
+  --accent-ink:#0d1117;
+  --pass:      #3fb950;
+  --fail:      #f85149;
+  --warn:      #d29922;
+  --info:      #79c0ff;
+  --shadow:    rgba(1,4,9,.6);
+
+  --syn-key:   #ff7b72;
+  --syn-str:   #a5d6ff;
+  --syn-num:   #79c0ff;
+  --syn-com:   #8b949e;
+  --syn-type:  #ffa657;
+  --syn-fn:    #d2a8ff;
+  --monaco-base: vs-dark;
+}
+
+/* True black, for an OLED panel where #000 costs no light at all. Note --bg-2 and --bg-3 are
+   *not* black: panels have to separate from the page somehow, and on a black ground the only
+   available direction is up. The accent stays the brand amber, which is the point — this is Forge
+   with the backlight switched off. */
+[data-palette="oled"] {
+  --bg:        #000000;
+  --bg-2:      #0b0b0d;
+  --bg-3:      #151519;
+  --line:      #26262c;
+  --line-soft: #17171b;
+  --fg:        #f2f4f7;
+  --fg-dim:    #9ba1ab;
+  --fg-faint:  #646a75;
+
+  --accent:    #ffa116;
+  --accent-ink:#000000;
+  --pass:      #35e29b;
+  --fail:      #ff6161;
+  --warn:      #ffcc45;
+  --info:      #64b5ff;
+  --shadow:    rgba(0,0,0,.85);
+
+  --syn-key:   #6cb6ff;
+  --syn-str:   #f3a17a;
+  --syn-num:   #b9dd9e;
+  --syn-com:   #6b7682;
+  --syn-type:  #4fd6be;
+  --syn-fn:    #e2e28a;
+  --monaco-base: vs-dark;
+}
+
+/* ---- the classics, from each theme's own published palette ----
+ *
+ * Every value below is lifted from the scheme's official spec, not eyeballed from a screenshot:
+ * people who use Dracula all day know exactly what #ff79c6 looks like, and a near miss reads as a
+ * knock-off. Where a scheme has no colour for a role this app needs (Rosé Pine has no green, so
+ * nothing to say "passed" in), the gap is filled from the scheme's own vocabulary — the colour its
+ * authors use for that meaning elsewhere — rather than imported from outside it.
+ */
+
+[data-palette="dracula"] {           /* Dracula — the purple one */
+  --bg:        #282a36;
+  --bg-2:      #2e303e;
+  --bg-3:      #383a4a;
+  --line:      #44475a;
+  --line-soft: #343746;
+  --fg:        #f8f8f2;
+  --fg-dim:    #b4b6c9;
+  --fg-faint:  #6272a4;
+
+  --accent:    #bd93f9;
+  --accent-ink:#21222c;
+  --pass:      #50fa7b;
+  --fail:      #ff5555;
+  --warn:      #f1fa8c;
+  --info:      #8be9fd;
+  --shadow:    rgba(0,0,0,.45);
+
+  --syn-key:   #ff79c6;
+  --syn-str:   #f1fa8c;
+  --syn-num:   #bd93f9;
+  --syn-com:   #6272a4;
+  --syn-type:  #8be9fd;
+  --syn-fn:    #50fa7b;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="tokyo-night"] {       /* Tokyo Night — neon city after the rain */
+  --bg:        #1a1b26;
+  --bg-2:      #1f2133;
+  --bg-3:      #262a3f;
+  --line:      #2f3549;
+  --line-soft: #232436;
+  --fg:        #c0caf5;
+  --fg-dim:    #a0a9cb;
+  --fg-faint:  #737aa2;
+
+  --accent:    #7aa2f7;
+  --accent-ink:#16161e;
+  --pass:      #9ece6a;
+  --fail:      #f7768e;
+  --warn:      #e0af68;
+  --info:      #7dcfff;
+  --shadow:    rgba(0,0,0,.5);
+
+  --syn-key:   #bb9af7;
+  --syn-str:   #9ece6a;
+  --syn-num:   #ff9e64;
+  --syn-com:   #565f89;
+  --syn-type:  #2ac3de;
+  --syn-fn:    #7aa2f7;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="catppuccin-mocha"] {  /* Catppuccin Mocha — soft pastels on a warm dark */
+  --bg:        #1e1e2e;
+  --bg-2:      #252536;
+  --bg-3:      #313244;
+  --line:      #45475a;
+  --line-soft: #2a2b3c;
+  --fg:        #cdd6f4;
+  --fg-dim:    #a6adc8;
+  --fg-faint:  #7f849c;
+
+  --accent:    #cba6f7;
+  --accent-ink:#1e1e2e;
+  --pass:      #a6e3a1;
+  --fail:      #f38ba8;
+  --warn:      #f9e2af;
+  --info:      #89dceb;
+  --shadow:    rgba(17,17,27,.55);
+
+  --syn-key:   #cba6f7;
+  --syn-str:   #a6e3a1;
+  --syn-num:   #fab387;
+  --syn-com:   #9399b2;
+  --syn-type:  #f9e2af;
+  --syn-fn:    #89b4fa;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="one-dark"] {          /* One Dark — Atom's, and half of VS Code's */
+  --bg:        #282c34;
+  --bg-2:      #2c313a;
+  --bg-3:      #333842;
+  --line:      #3e4451;
+  --line-soft: #2f343e;
+  --fg:        #abb2bf;
+  --fg-dim:    #9298a4;   /* +3% lightness: the stock grey is 4.2:1 on a panel */
+  --fg-faint:  #7f848e;
+
+  --accent:    #61afef;
+  --accent-ink:#1e2127;
+  --pass:      #98c379;
+  --fail:      #e06c75;
+  --warn:      #e5c07b;
+  --info:      #56b6c2;
+  --shadow:    rgba(0,0,0,.45);
+
+  --syn-key:   #c678dd;
+  --syn-str:   #98c379;
+  --syn-num:   #d19a66;
+  --syn-com:   #7f848e;
+  --syn-type:  #e5c07b;
+  --syn-fn:    #61afef;
+  --monaco-base: vs-dark;
+}
+
+/* Monokai's accent is its yellow, not the hot pink everyone remembers: pink is the scheme's red, so
+   making it the accent would paint every primary button the same colour as a failing test. */
+[data-palette="monokai"] {           /* Monokai — the one Sublime made famous */
+  --bg:        #272822;
+  --bg-2:      #2d2e27;
+  --bg-3:      #3e3d32;
+  --line:      #49483e;
+  --line-soft: #34352d;
+  --fg:        #f8f8f2;
+  --fg-dim:    #b8b8ac;
+  --fg-faint:  #75715e;
+
+  --accent:    #e6db74;
+  --accent-ink:#1f201b;
+  --pass:      #a6e22e;
+  --fail:      #f92672;
+  --warn:      #fd971f;
+  --info:      #66d9ef;
+  --shadow:    rgba(0,0,0,.5);
+
+  --syn-key:   #f92672;
+  --syn-str:   #e6db74;
+  --syn-num:   #ae81ff;
+  --syn-com:   #75715e;
+  --syn-type:  #66d9ef;
+  --syn-fn:    #a6e22e;
+  --monaco-base: vs-dark;
+}
+
+/* Rosé Pine has no green. Its own guidance uses foam for "added", so foam is what passing looks
+   like here, and the tests still read as success without importing a colour the scheme lacks. */
+[data-palette="rose-pine"] {         /* Rosé Pine — muted, dusky, quiet */
+  --bg:        #191724;
+  --bg-2:      #1f1d2e;
+  --bg-3:      #26233a;
+  --line:      #403d52;
+  --line-soft: #21202e;
+  --fg:        #e0def4;
+  --fg-dim:    #908caa;
+  --fg-faint:  #6e6a86;
+
+  --accent:    #ebbcba;
+  --accent-ink:#191724;
+  --pass:      #9ccfd8;
+  --fail:      #eb6f92;
+  --warn:      #f6c177;
+  --info:      #c4a7e7;
+  --shadow:    rgba(0,0,0,.5);
+
+  --syn-key:   #31748f;
+  --syn-str:   #f6c177;
+  --syn-num:   #c4a7e7;
+  --syn-com:   #6e6a86;
+  --syn-type:  #9ccfd8;
+  --syn-fn:    #ebbcba;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="solarized-dark"] {    /* Solarized Dark — sixteen colours, chosen by maths */
+  --bg:        #002b36;
+  --bg-2:      #04313d;
+  --bg-3:      #073642;
+  --line:      #0f4553;
+  --line-soft: #06323e;
+  --fg:        #93a1a1;
+  --fg-dim:    #839496;
+  --fg-faint:  #657b83;
+
+  --accent:    #268bd2;
+  --accent-ink:#001b22;   /* neither base3 (3.7:1) nor base03 (4.1:1) can label a button on the blue */
+  --pass:      #859900;
+  --fail:      #dc322f;
+  --warn:      #b58900;
+  --info:      #2aa198;
+  --shadow:    rgba(0,0,0,.45);
+
+  --syn-key:   #859900;
+  --syn-str:   #2aa198;
+  --syn-num:   #d33682;
+  --syn-com:   #657b83;
+  --syn-type:  #b58900;
+  --syn-fn:    #268bd2;
+  --monaco-base: vs-dark;
+}
+
+[data-palette="paper"] {             /* daylight. Every mix below flips on its own. */
+  --bg:        #fbfbfa;
+  --bg-2:      #f2f2ef;
+  --bg-3:      #e8e8e3;
+  --line:      #d6d6cf;
+  --line-soft: #e6e6e1;
+  --fg:        #1f2328;
+  --fg-dim:    #57606a;
+  --fg-faint:  #8b949e;
+
+  --accent:    #b45309;
+  --accent-ink:#fffaf0;
+  --pass:      #197f5a;
+  --fail:      #c0392b;
+  --warn:      #a16207;
+  --info:      #0b6bcb;
+  --shadow:    rgba(31,35,40,.16);
+
+  --syn-key:   #cf222e;
+  --syn-str:   #0a3069;
+  --syn-num:   #0550ae;
+  --syn-com:   #6e7781;
+  --syn-type:  #953800;
+  --syn-fn:    #8250df;
+  --monaco-base: vs;
+}
+
+/* ---- light classics ----
+ *
+ * Syntax colours stay exactly as published: they are how you recognise a theme from across the
+ * room, and changing them would make it a different theme. The roles that carry meaning in this
+ * app (pass, fail, warn, the label on a button) are held to 3:1 against the panel they sit on,
+ * and where a scheme's own value misses, it is moved the smallest step along its own hue that
+ * clears the bar. Solarized and the two pastel schemes are low-contrast on purpose, and their code
+ * still is; only "did my test pass" was not allowed to be.
+ */
+
+[data-palette="github-light"] {      /* GitHub Light — the daytime half of the GitHub pair */
+  --bg:        #ffffff;
+  --bg-2:      #f6f8fa;
+  --bg-3:      #eaeef2;
+  --line:      #d0d7de;
+  --line-soft: #e7ebef;
+  --fg:        #1f2328;
+  --fg-dim:    #59636e;
+  --fg-faint:  #818b98;
+
+  --accent:    #0969da;
+  --accent-ink:#ffffff;
+  --pass:      #1a7f37;
+  --fail:      #d1242f;
+  --warn:      #9a6700;
+  --info:      #0550ae;
+  --shadow:    rgba(31,35,40,.12);
+
+  --syn-key:   #cf222e;
+  --syn-str:   #0a3069;
+  --syn-num:   #0550ae;
+  --syn-com:   #59636e;
+  --syn-type:  #953800;
+  --syn-fn:    #8250df;
+  --monaco-base: vs;
+}
+
+/* Solarized's own body text (base00) is too faint to read code in for long, so the foreground is
+   one step up, at base01, the scheme's "emphasised content" — still entirely Solarized. */
+[data-palette="solarized-light"] {   /* Solarized Light — the same sixteen, by day */
+  --bg:        #fdf6e3;
+  --bg-2:      #f6efdb;
+  --bg-3:      #eee8d5;
+  --line:      #dcd5c0;
+  --line-soft: #ebe4d0;
+  --fg:        #586e75;
+  --fg-dim:    #657b83;
+  --fg-faint:  #93a1a1;
+
+  --accent:    #268bd2;
+  --accent-ink:#001b22;   /* see Solarized Dark: the blue needs a darker ink than the scheme owns */
+  --pass:      #809300;
+  --fail:      #dc322f;
+  --warn:      #ad8300;
+  --info:      #299e95;
+  --shadow:    rgba(88,110,117,.16);
+
+  --syn-key:   #859900;
+  --syn-str:   #2aa198;
+  --syn-num:   #d33682;
+  --syn-com:   #93a1a1;
+  --syn-type:  #b58900;
+  --syn-fn:    #268bd2;
+  --monaco-base: vs;
+}
+
+[data-palette="catppuccin-latte"] {  /* Catppuccin Latte — the pastels, with the lights on */
+  --bg:        #eff1f5;
+  --bg-2:      #e6e9ef;
+  --bg-3:      #dce0e8;
+  --line:      #ccd0da;
+  --line-soft: #dde1e9;
+  --fg:        #4c4f69;
+  --fg-dim:    #5c5f77;
+  --fg-faint:  #7c7f93;
+
+  --accent:    #8839ef;
+  --accent-ink:#eff1f5;
+  --pass:      #3d9829;
+  --fail:      #d20f39;
+  --warn:      #e75501;   /* peach, a touch deeper; Latte has no yellow you could read a label in */
+  --info:      #1e66f5;
+  --shadow:    rgba(76,79,105,.14);
+
+  --syn-key:   #8839ef;
+  --syn-str:   #40a02b;
+  --syn-num:   #fe640b;
+  --syn-com:   #7c7f93;
+  --syn-type:  #df8e1d;
+  --syn-fn:    #1e66f5;
+  --monaco-base: vs;
+}
+
+[data-palette="rose-pine-dawn"] {    /* Rosé Pine Dawn — the quiet one, at sunrise */
+  --bg:        #faf4ed;
+  --bg-2:      #f4ede8;
+  --bg-3:      #f2e9e1;
+  --line:      #dfdad9;
+  --line-soft: #ece5df;
+  --fg:        #575279;
+  --fg-dim:    #797593;
+  --fg-faint:  #9893a5;
+
+  --accent:    #286983;
+  --accent-ink:#faf4ed;
+  --pass:      #55929c;
+  --fail:      #b4637a;
+  --warn:      #c27914;   /* gold is 1.9:1 on a panel, which made every Medium label vanish */
+  --info:      #907aa9;
+  --shadow:    rgba(87,82,121,.14);
+
+  --syn-key:   #286983;
+  --syn-str:   #ea9d34;
+  --syn-num:   #907aa9;
+  --syn-com:   #9893a5;
+  --syn-type:  #56949f;
+  --syn-fn:    #b4637a;
+  --monaco-base: vs;
+}
+
+/* ---------- derived from whichever palette is active ----------
+ *
+ * Every mix is relative to --fg or --bg rather than to black or white, so a light palette inverts
+ * on its own: "9% of the foreground over bg-2" darkens on paper and lightens in the dark.
+ */
+
+:root,
+[data-palette] {
+  --changed:     var(--accent);
+  --accent-dim:  color-mix(in srgb, var(--accent) 38%, var(--bg));
+  --accent-hi:   color-mix(in srgb, var(--accent) 80%, var(--fg));
+  --hover:       color-mix(in srgb, var(--fg) 9%, var(--bg-2));
+  --hover-line:  color-mix(in srgb, var(--fg) 16%, var(--line));
+  --veil:        color-mix(in srgb, var(--fg) 7%, transparent);
+  --ring:        color-mix(in srgb, var(--accent) 16%, transparent);
+
+  --tint-accent: color-mix(in srgb, var(--accent) 13%, transparent);
+  --tint-pass:   color-mix(in srgb, var(--pass) 13%, transparent);
+  --tint-fail:   color-mix(in srgb, var(--fail) 11%, transparent);
+  --tint-warn:   color-mix(in srgb, var(--warn) 11%, transparent);
+  --edge-pass:   color-mix(in srgb, var(--pass) 42%, transparent);
+  --edge-fail:   color-mix(in srgb, var(--fail) 42%, transparent);
+  --edge-warn:   color-mix(in srgb, var(--warn) 30%, transparent);
+  --fail-fg:     color-mix(in srgb, var(--fail) 55%, var(--fg));
+
+  --mono: "JetBrains Mono", "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+
+  --r: 8px;
+  --topbar-h: 48px;
+}
+/* @palettes:end */
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.5 var(--sans);
+  overflow: hidden;
+}
+
+/* ---------- top bar ---------- */
+
+.topbar {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  z-index: 20;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+}
+.brand .bolt { color: var(--accent); }
+.brand-mark { width: 15px; height: 17px; fill: var(--accent); flex: none; }
+
+/* A round, quiet button for a single glyph: help, close. */
+.icon-btn {
+  width: 28px; height: 28px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  border-color: transparent;
+  color: var(--fg-dim);
+  font-weight: 650;
+}
+.icon-btn:hover { background: var(--hover); border-color: var(--line); color: var(--fg); }
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg-dim);
+  font-size: 13px;
+  min-width: 0;
+}
+.crumbs .sep { color: var(--fg-faint); }
+.crumbs .title {
+  color: var(--fg);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 42vw;
+}
+
+.spacer { flex: 1; }
+
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ---------- palette picker ---------- */
+
+.palette { position: relative; }
+
+.palette-btn {
+  padding: 5px 9px;
+  background: transparent;
+  border-color: transparent;
+}
+.palette-btn:hover { background: var(--hover); border-color: var(--line); }
+
+.palette-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  width: 380px;
+  max-width: calc(100vw - 24px);
+  /* Eighteen palettes in a 768px window: the menu scrolls rather than running off the screen. */
+  max-height: calc(100vh - var(--topbar-h) - 24px);
+  overflow-y: auto;
+  padding: 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: 0 10px 30px var(--shadow);
+}
+
+/* "Match system" — a switch, because it is a mode you are in, not a palette you pick. */
+.palette-system {
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  background: var(--bg);
+}
+.palette-system.on { border-color: var(--accent-dim); }
+.palette-system .sys-label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.palette-system .sys-label > span { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.palette-system b { font-size: 12.5px; font-weight: 600; }
+.palette-system .sys-note {
+  font-size: 11px; color: var(--fg-faint);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.palette-system.on .sys-note { color: var(--fg-dim); }
+
+.switch {
+  position: relative;
+  flex: none;
+  width: 30px; height: 17px;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+}
+.switch .knob {
+  position: absolute; top: 2px; left: 2px;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--fg-faint);
+  transition: transform .18s cubic-bezier(.3, .8, .3, 1.2), background .18s;
+}
+.switch[aria-checked="true"] { background: var(--tint-accent); border-color: var(--accent-dim); }
+.switch[aria-checked="true"] .knob { transform: translateX(13px); background: var(--accent); }
+.switch:hover { border-color: var(--hover-line); }
+
+.palette-group {
+  margin: 10px 2px 6px;
+  font-size: 10.5px; font-weight: 650;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--fg-faint);
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.palette-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 0;
+  padding: 5px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  text-align: left;
+  cursor: pointer;
+  white-space: normal;
+}
+.palette-opt:hover, .palette-opt:focus-visible { background: var(--bg-3); border-color: var(--line); outline: none; }
+/* On screen right now. */
+.palette-opt.on { border-color: var(--accent); }
+.palette-opt { position: relative; }
+.palette-opt .who { display: block; min-width: 0; padding: 0 2px 1px; }
+/* Names wrap rather than truncate: "Catppuccin Mocha" cut to "Catppuccin M…" is not a name you can
+   choose by, and a two-line card in a grid row costs nothing but height. */
+.palette-opt .who b {
+  display: block;
+  font-size: 11.5px; font-weight: 600; line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+/* The mark sits on the thumbnail as a badge, so it takes no width from the name beside it. */
+.palette-opt .mark {
+  position: absolute; top: 9px; right: 9px;
+  width: 16px; height: 16px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 9.5px; font-weight: 700; line-height: 1;
+  background: var(--accent); color: var(--accent-ink);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.palette-opt .mark:empty { display: none; }
+
+/* A miniature of the interface, drawn entirely from the variables of whichever `data-palette`
+   encloses it — so it is the palette itself on screen, not a hand-picked approximation. */
+.mini {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 42px; height: 30px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.mini i { position: absolute; display: block; border-radius: 1px; }
+.mini .bar { top: 0; left: 0; right: 0; height: 8px; background: var(--bg-2); }
+.mini .bar::after {
+  content: ''; position: absolute; top: 3px; left: 4px;
+  width: 10px; height: 2px; border-radius: 1px; background: var(--accent);
+}
+.mini .l1 { top: 14px; left: 5px; width: 13px; height: 3px; background: var(--syn-key); }
+.mini .l2 { top: 21px; left: 5px; width: 22px; height: 3px; background: var(--syn-str); }
+.mini .l3 { display: none; }
+
+/* In the picker grid the card is wider, so it gets a whole line more of code: keyword, a call, a
+   string — the three colours you actually look at all day. */
+.palette-opt .mini { width: 100%; height: 44px; }
+.palette-opt .mini .bar { height: 9px; }
+.palette-opt .mini .bar::after { top: 3.5px; left: 6px; width: 16px; }
+.palette-opt .mini .l1 { top: 16px; left: 7px;  width: 22%; }
+.palette-opt .mini .l2 { top: 24px; left: 14px; width: 46%; background: var(--syn-fn); }
+.palette-opt .mini .l3 { display: block; top: 32px; left: 14px; width: 34%; height: 3px; background: var(--syn-str); }
+
+/* The topbar button is the same miniature, shrunk — it shows what you are wearing. */
+.palette-btn .mini { width: 26px; height: 19px; border-radius: 4px; }
+.palette-btn .mini .bar { height: 5px; }
+.palette-btn .mini .bar::after { top: 1.5px; left: 3px; width: 7px; height: 2px; }
+.palette-btn .mini .l1 { top: 9px;  left: 3px; width: 8px;  height: 2px; }
+.palette-btn .mini .l2 { top: 13px; left: 3px; width: 14px; height: 2px; }
+
+/* ---------- controls ---------- */
+
+button, .btn {
+  font: inherit;
+  font-size: 13px;
+  color: var(--fg);
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 6px 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  transition: background .12s, border-color .12s, opacity .12s;
+  white-space: nowrap;
+}
+button:hover, .btn:hover { background: var(--hover); border-color: var(--hover-line); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 650;
+}
+button.primary:hover { background: var(--accent-hi); border-color: var(--accent-hi); }
+
+button.ghost { background: transparent; }
+button.danger:hover { border-color: var(--fail); color: var(--fail); }
+
+kbd {
+  font: 11px var(--mono);
+  background: var(--veil);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--fg-dim);
+}
+
+input[type=text], textarea, select {
+  font: inherit;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 8px 10px;
+  width: 100%;
+}
+textarea { font: 13px/1.6 var(--mono); resize: vertical; }
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+/* ---------- layout ---------- */
+
+#app {
+  height: calc(100vh - var(--topbar-h));
+  overflow: hidden;
+}
+
+.loading, .empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--fg-faint);
+}
+
+.page {
+  height: 100%;
+  overflow-y: auto;
+  padding: 28px 32px 60px;
+}
+.page.narrow { max-width: 1000px; margin: 0 auto; }
+
+h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.02em; }
+h2 { font-size: 15px; margin: 28px 0 10px; letter-spacing: -0.01em; }
+h3 { font-size: 13px; margin: 0 0 8px; color: var(--fg-dim); font-weight: 600;
+     text-transform: uppercase; letter-spacing: .06em; }
+.sub { color: var(--fg-dim); margin: 0 0 22px; }
+
+/* @ember:begin -- from here to @ember:end is the creature alone. The website's build lifts exactly
+   this span out, so it must lean on nothing but the palette variables. */
+/* ---------- the ember ----------
+ *
+ * Everything below is driven by one number: --heat, 0..1, set on .ember-wrap from the server's
+ * state. Colour, size, opacity and animation speed are all mixed or scaled from it, which is why
+ * the pet needs no per-palette artwork and no five separate drawings for five moods — a fire that
+ * is doing badly is just a fire with less light in it.
+ *
+ * --lean tilts it toward wherever your cursor is, in the range -0.5..0.5.
+ * --act-dur is how long the reaction currently playing lasts. pet.js writes it, so the keyframe
+ * list and the timer that cleans up after it cannot drift apart.
+ */
+
+.ember-wrap {
+  --heat: 1;
+  --lean: 0;
+  --gorge: .5;
+  --act-dur: .55s;
+  /* Amber when hot, ashen when not. Every stop is relative to the palette, never a literal. */
+  --fire: color-mix(in srgb, var(--accent) calc(var(--heat) * 100%), var(--fg-faint));
+  /* A hungry ember is a *smaller* ember. The flame group already shrinks inside the box; this
+     shrinks the whole creature with it, which is what you notice from across the screen. Growing
+     back is the visible half of feeding it. */
+  --size: calc(0.76 + var(--heat) * 0.3);
+  display: inline-flex;
+  flex: none;
+  line-height: 0;
+  position: relative;              /* a payment floats off it */
+  transform-origin: 50% 100%;      /* it sits on its coal; it grows upward, not out of the floor */
+  transform: scale(var(--size));
+  transition: transform .6s cubic-bezier(.2, .8, .3, 1.1);
+}
+.ember-wrap.fx-green { --fire: color-mix(in srgb, var(--pass) calc(var(--heat) * 100%), var(--fg-faint)); }
+
+/* geometricPrecision rather than the default "auto": the perch draws this at 36px, where auto is
+   allowed to trade curve accuracy for speed and the flame's shoulder goes visibly faceted. */
+.ember { overflow: visible; shape-rendering: geometricPrecision; }
+
+/* ---- the paint servers ----
+ *
+ * Every gradient stop is a palette token, so the artwork still follows a palette switch, and it
+ * switches live, because these are CSS properties on live elements rather than fills baked into
+ * the markup. The per-instance ids arrive from pet.js as --paint-*, one set per creature. */
+
+.ember .g-halo-0 { stop-color: var(--fire); stop-opacity: calc(var(--heat) * .34); }
+.ember .g-halo-1 { stop-color: var(--fire); stop-opacity: calc(var(--heat) * .13); }
+.ember .g-halo-2 { stop-color: var(--fire); stop-opacity: 0; }
+
+/* Down the body: an ashen tip over a base that keeps its colour longest, which is how a real flame
+   dies — from the top. The base tracks --heat so a cold ember loses the ramp along with the light. */
+.ember .g-body-0 { stop-color: var(--fire); stop-opacity: .5; }
+.ember .g-body-1 { stop-color: color-mix(in srgb, var(--fire) 55%, var(--accent)); stop-opacity: .9; }
+.ember .g-body-2 { stop-color: color-mix(in srgb, var(--accent) calc(var(--heat) * 100%), var(--fire)); }
+
+/* The core, fading to nothing at its edge. The flat version had a hard rim where it met the body,
+   which is exactly what made it read as a sticker on the flame rather than a depth in it. */
+.ember .g-core-0 { stop-color: color-mix(in srgb, var(--bg) calc(64% - var(--heat) * 20%), var(--fire)); stop-opacity: .95; }
+.ember .g-core-1 { stop-color: color-mix(in srgb, var(--bg) calc(46% - var(--heat) * 16%), var(--fire)); stop-opacity: .62; }
+.ember .g-core-2 { stop-color: var(--fire); stop-opacity: 0; }
+
+/* Lit from above, like everything else on the page. */
+.ember .g-coal-0 { stop-color: color-mix(in srgb, var(--fg-faint) 58%, var(--bg)); }
+.ember .g-coal-1 { stop-color: color-mix(in srgb, var(--fg-faint) 22%, var(--bg)); }
+
+.ember .coal { fill: var(--paint-coal, var(--fg-faint)); }
+
+/* Where the fire meets its fuel. Blurred, because a hard-edged hot spot looks like a bug. */
+.ember .coal-hot {
+  fill: var(--fire);
+  filter: var(--paint-soft);
+  opacity: calc(var(--heat) * .5);
+}
+
+/* The light it throws. Invisible when cold, which is most of what "sick" looks like. */
+.ember .glow { fill: var(--paint-halo, var(--fire)); }
+
+/* Soft edge: a blurred copy of the silhouette under the crisp one, so the flame has no outline. */
+.ember .flame-halo {
+  fill: var(--fire);
+  filter: var(--paint-soft);
+  opacity: calc(var(--heat) * .5);
+}
+
+.ember .flame {
+  fill: var(--paint-body, var(--fire));
+  opacity: calc(0.45 + var(--heat) * 0.55);
+}
+.ember .flame-inner {
+  fill: var(--paint-core, var(--fire));
+  opacity: calc(var(--heat) * 0.9);
+}
+.ember .eye { fill: var(--bg); }
+/* A dot with a highlight is looking at you; a dot without one is a hole. */
+.ember .glint { fill: var(--fg); opacity: .5; }
+.ember .eyes { transform-origin: 12px 14.5px; }
+
+/* Only ever open during a reaction that needs one. See the note in pet.js. */
+.ember .mouth { fill: var(--bg); opacity: 0; transform-origin: 12px 17.3px; }
+
+.ember .smoke, .ember .sparks, .ember .crackles { opacity: 0; }
+.ember .puff { fill: var(--fg-faint); }
+.ember .spark { fill: var(--accent); }
+.ember .crack { fill: var(--fire); }
+
+/* Where each chip flies. Seven directions, weighted sideways and up, so the shower spreads rather
+   than marching out in a ring. */
+.ember .crack.c0 { --dx: -8px;  --dy: -7px; }
+.ember .crack.c1 { --dx:  8px;  --dy: -6px; }
+.ember .crack.c2 { --dx: -11px; --dy: -1px; }
+.ember .crack.c3 { --dx:  11px; --dy: -2px; }
+.ember .crack.c4 { --dx: -4px;  --dy: -11px; }
+.ember .crack.c5 { --dx:  5px;  --dy: -12px; }
+.ember .crack.c6 { --dx:  0px;  --dy: -14px; }
+
+/* The flame group is what moves: it shrinks, sinks and leans as a unit. */
+.ember .flame-group {
+  transform-origin: 12px 22px;
+  transform: translateX(calc(var(--lean) * 2px))
+             scaleY(calc(0.62 + var(--heat) * 0.38))
+             scaleX(calc(0.78 + var(--heat) * 0.22));
+  transition: transform .5s ease;
+}
+
+/* Cold: grey, slumped, smoking, eyes half shut. */
+.ember-wrap[data-state="cold"] .flame { opacity: .42; }
+.ember-wrap[data-state="cold"] .eyes { opacity: .55; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ember .flame-group { animation: ember-flicker 2.4s ease-in-out infinite; }
+
+  /* Faster and taller the hotter it is — a blazing ember is visibly busy, a guttering one crawls. */
+  .ember-wrap[data-state="blazing"] .flame-group { animation-duration: 1.1s; }
+  .ember-wrap[data-state="bright"]  .flame-group { animation-duration: 1.6s; }
+  .ember-wrap[data-state="guttering"] .flame-group { animation-duration: 3.6s; }
+  .ember-wrap[data-state="cold"]    .flame-group { animation-duration: 5s; }
+
+  .ember-wrap.fx-hyper .flame-group { animation-duration: .45s; }
+
+  .ember-wrap[data-state="cold"] .smoke { opacity: .5; animation: ember-smoke 3.4s linear infinite; }
+  .ember-wrap[data-state="cold"] .puff.p1 { animation-delay: 1.1s; }
+  .ember-wrap[data-state="cold"] .puff.p2 { animation-delay: 2.2s; }
+
+  .ember-wrap.r-flare .flame-group { animation: ember-flare .7s ease-out; }
+  .ember-wrap.r-flare .sparks { animation: ember-sparks .9s ease-out; }
+  .ember-wrap.r-flinch .flame-group { animation: ember-flinch .5s ease-out; }
+  .ember-wrap.r-dip .flame-group { animation: ember-dip .6s ease-in-out; }
+  .ember-wrap.r-crackle .flame-group { animation: ember-flicker .18s ease-in-out 5; }
+
+  /* Feeding. Three things at once, because a meal should be the loudest thing the ember does: it
+     ducks, swells past where it will settle, and throws chips. The swell is scaled by --gorge so
+     the size of the animation is the size of the meal. */
+  .ember-wrap.r-feed { animation: ember-gorge .9s cubic-bezier(.25, .9, .3, 1.2); }
+  .ember-wrap.r-feed .flame-group { animation: ember-flicker .16s ease-in-out 6; }
+  .ember-wrap.r-feed .crackles { opacity: 1; }
+  .ember-wrap.r-feed .crack { animation: ember-crackle .8s ease-out backwards; }
+  .ember-wrap.r-feed .crack.c1 { animation-delay: .05s; }
+  .ember-wrap.r-feed .crack.c2 { animation-delay: .11s; }
+  .ember-wrap.r-feed .crack.c3 { animation-delay: .08s; }
+  .ember-wrap.r-feed .crack.c4 { animation-delay: .16s; }
+  .ember-wrap.r-feed .crack.c5 { animation-delay: .21s; }
+  .ember-wrap.r-feed .crack.c6 { animation-delay: .13s; }
+
+  /* ---- reactions ----
+   *
+   * Everything from here down is something the ember does *at you* rather than about itself, and
+   * which one you get is a weighted roll in pet.js. The point of having nine is that the second
+   * poke is not the first poke: a companion that always does the same thing is a button that
+   * happens to be shaped like a creature, and you stop pressing it on day two.
+   *
+   * Every one of these ends on `scale(var(--size))`, the resting transform. Land anywhere else and
+   * the creature snaps back the moment the class comes off. */
+
+  .ember-wrap[class*="act-"] { animation-duration: var(--act-dur); animation-fill-mode: both; }
+
+  /* The common one. It squashes, wobbles off its coal, blinks, throws a couple of sparks. Nothing
+     about the pet changes — that is the point of it. You reached over and it noticed. */
+  .ember-wrap.act-wobble { animation-name: ember-wobble; animation-timing-function: cubic-bezier(.3, .9, .35, 1.25); }
+  .ember-wrap.act-wobble .flame-group { animation: ember-flicker .13s ease-in-out 4; }
+  .ember-wrap.act-wobble .sparks { animation: ember-sparks .6s ease-out; }
+  .ember-wrap.act-wobble .eyes { animation: ember-blink .5s ease-in-out; }
+
+  /* Flattened and sprung back, the oldest joke in animation and still the best one. */
+  .ember-wrap.act-squish { animation-name: ember-squish; animation-timing-function: cubic-bezier(.3, .8, .3, 1.3); }
+  .ember-wrap.act-squish .eyes { animation: ember-squint .42s ease-out; }
+
+  /* Straight up off the coal. Crouch, launch, land heavy. */
+  .ember-wrap.act-hop { animation-name: ember-hop; animation-timing-function: cubic-bezier(.3, .7, .4, 1); }
+  .ember-wrap.act-hop .sparks { animation: ember-sparks .55s ease-out .28s backwards; }
+
+  /* Three quick bounces with a tilt in them. The one that reads as pleased. */
+  .ember-wrap.act-giggle { animation-name: ember-giggle; animation-timing-function: ease-in-out; }
+  .ember-wrap.act-giggle .mouth { animation: mouth-giggle var(--act-dur) ease-in-out; }
+  .ember-wrap.act-giggle .eyes { animation: ember-squint .3s ease-out 2; }
+
+  /* Annoyed. Fast, small, and over before the others have started. */
+  .ember-wrap.act-shake { animation-name: ember-shake; animation-timing-function: ease-in-out; }
+  .ember-wrap.act-shake .eyes { animation: ember-squint .2s ease-out 2; }
+
+  /* Wind up, then blow. Borrows the cold-state smoke for the puff and the feed's chips for spray. */
+  .ember-wrap.act-sneeze { animation-name: ember-sneeze; animation-timing-function: cubic-bezier(.4, 0, .2, 1); }
+  .ember-wrap.act-sneeze .smoke { opacity: .55; animation: ember-smoke .55s ease-out .34s backwards; }
+  .ember-wrap.act-sneeze .crackles { opacity: 1; }
+  .ember-wrap.act-sneeze .crack { animation: ember-crackle .44s ease-out .34s backwards; }
+  .ember-wrap.act-sneeze .eyes { animation: ember-squint .34s ease-in; }
+
+  /* Startled. The only one that opens the mouth wide, so it stays the one that means "what". */
+  .ember-wrap.act-gasp { animation-name: ember-gasp; animation-timing-function: cubic-bezier(.2, .9, .3, 1.2); }
+  .ember-wrap.act-gasp .mouth { animation: mouth-gasp var(--act-dur) cubic-bezier(.2, .9, .3, 1.2); }
+  .ember-wrap.act-gasp .eyes { animation: ember-wide var(--act-dur) cubic-bezier(.2, .9, .3, 1.2); }
+
+  /* Uncommon: a full turn on the spot. */
+  .ember-wrap.act-spin { animation-name: ember-spin; animation-timing-function: cubic-bezier(.35, 0, .2, 1); }
+  .ember-wrap.act-spin .sparks { animation: ember-sparks .7s ease-out; }
+
+  /* Rare. If you have never seen this one, keep poking. */
+  .ember-wrap.act-flip { animation-name: ember-flip; animation-timing-function: cubic-bezier(.3, .1, .3, 1); }
+  .ember-wrap.act-flip .crackles { opacity: 1; }
+  .ember-wrap.act-flip .crack { animation: ember-crackle .5s ease-out .42s backwards; }
+  .ember-wrap.act-flip .eyes { animation: ember-wide .5s ease-out; }
+
+  /* Not in the pool. You cannot roll this one — it is what you get for prodding it five times in a
+     row, which makes it the only reaction here you have to earn by being annoying. */
+  .ember-wrap.act-dizzy { animation-name: ember-dizzy; animation-timing-function: ease-in-out; }
+  .ember-wrap.act-dizzy .eyes { animation: ember-cross var(--act-dur) ease-in-out; }
+  .ember-wrap.act-dizzy .mouth { animation: mouth-giggle var(--act-dur) ease-in-out; }
+
+  /* Accepted, and paid: the biggest thing the ember ever does, and the one you cannot roll. Crouch,
+     jump, flare at the top, land grinning. The sparks across the editor are the perch's half. */
+  .ember-wrap.act-cheer { animation-name: ember-cheer; animation-timing-function: cubic-bezier(.3, .7, .3, 1); }
+  .ember-wrap.act-cheer .flame-group { animation: ember-flare .7s ease-out .22s; }
+  .ember-wrap.act-cheer .sparks { animation: ember-sparks .8s ease-out .3s backwards; }
+  .ember-wrap.act-cheer .eyes { animation: ember-squint .55s ease-out .35s; }
+  .ember-wrap.act-cheer .mouth { animation: mouth-giggle .9s ease-in-out .25s backwards; }
+
+  .burst .bit { animation: burst-fly 1.25s cubic-bezier(.12, .75, .35, 1) var(--wait, 0ms) forwards; }
+
+  /* ---- greetings ----
+   * A hover fires whenever the pointer crosses the creature on its way somewhere else, so these are
+   * all much smaller than a poke, and pet.js will not run two of them inside a second. */
+
+  .ember-wrap.act-perk { animation-name: ember-perk; animation-timing-function: cubic-bezier(.3, .9, .3, 1.2); }
+  .ember-wrap.act-perk .eyes { animation: ember-wide .4s ease-out; }
+
+  .ember-wrap.act-blink .eyes { animation: ember-blink var(--act-dur) ease-in-out; }
+
+  .ember-wrap.act-sway { animation-name: ember-sway; animation-timing-function: ease-in-out; }
+
+  .ember-wrap.act-peek { animation-name: ember-peek; animation-timing-function: ease-in-out; }
+  .ember-wrap.act-peek .eyes { animation: ember-glance var(--act-dur) ease-in-out; }
+
+  /* A hat being tried on drops onto it rather than appearing, so the wardrobe feels like holding
+     something up rather than toggling a checkbox. */
+  .ember .cos.try { animation: cos-try .26s cubic-bezier(.2, .9, .3, 1.3); }
+}
+
+@keyframes ember-flicker {
+  0%, 100% { transform: translateX(calc(var(--lean) * 2px)) scaleY(calc(0.62 + var(--heat) * 0.38)) scaleX(calc(0.78 + var(--heat) * 0.22)); }
+  50%      { transform: translateX(calc(var(--lean) * 2px - 0.3px)) scaleY(calc(0.68 + var(--heat) * 0.40)) scaleX(calc(0.76 + var(--heat) * 0.20)); }
+}
+@keyframes ember-flare {
+  0%   { transform: scaleY(1) scaleX(1); }
+  35%  { transform: scaleY(1.5) scaleX(1.15); }
+  100% { transform: scaleY(calc(0.62 + var(--heat) * 0.38)) scaleX(calc(0.78 + var(--heat) * 0.22)); }
+}
+@keyframes ember-flinch {
+  0%, 100% { transform: scaleY(calc(0.62 + var(--heat) * 0.38)) scaleX(calc(0.78 + var(--heat) * 0.22)); }
+  30% { transform: translateX(-1.5px) scaleY(calc(0.45 + var(--heat) * 0.3)) scaleX(1.1); }
+  60% { transform: translateX(1.5px)  scaleY(calc(0.5 + var(--heat) * 0.3)) scaleX(1.05); }
+}
+@keyframes ember-dip {
+  0%, 100% { transform: scaleY(calc(0.62 + var(--heat) * 0.38)); }
+  45% { transform: scaleY(calc(0.4 + var(--heat) * 0.25)); }
+}
+@keyframes ember-sparks {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-11px) scale(.3); }
+}
+/* What you earned, said where you are looking. The balance itself is behind a hover, so a payment
+   that only changed that number would go unseen — and an economy you cannot see is one you assume
+   is broken. */
+.spark-pop {
+  position: absolute;
+  left: 50%; bottom: 100%;
+  transform: translateX(-50%);
+  font: 600 12px/1 var(--sans);
+  color: var(--accent);
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 1px 4px var(--shadow);
+  animation: spark-pop 1.7s ease-out forwards;
+}
+@keyframes spark-pop {
+  0%   { opacity: 0; transform: translate(-50%, 6px) scale(.8); }
+  16%  { opacity: 1; transform: translate(-50%, -2px) scale(1.12); }
+  68%  { opacity: 1; transform: translate(-50%, -10px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -26px) scale(1); }
+}
+
+@keyframes ember-gorge {
+  0%   { transform: scale(calc(var(--size) * .9)); }
+  30%  { transform: scale(calc(var(--size) * (1 + var(--gorge) * .5))); }
+  58%  { transform: scale(calc(var(--size) * (1 + var(--gorge) * .08))); }
+  74%  { transform: scale(calc(var(--size) * (1 + var(--gorge) * .18))); }
+  100% { transform: scale(var(--size)); }
+}
+@keyframes ember-crackle {
+  0%   { opacity: 0; transform: translate(0, 0) scale(.3) rotate(0deg); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.9) rotate(140deg); }
+}
+
+/* ---- the reaction keyframes ---- */
+
+@keyframes ember-wobble {
+  0%   { transform: scale(var(--size)) rotate(0deg); }
+  16%  { transform: scale(calc(var(--size) * .87)) rotate(-7deg); }
+  38%  { transform: scale(calc(var(--size) * 1.13)) rotate(6deg); }
+  60%  { transform: scale(calc(var(--size) * .96)) rotate(-3.5deg); }
+  80%  { transform: scale(calc(var(--size) * 1.04)) rotate(1.5deg); }
+  100% { transform: scale(var(--size)) rotate(0deg); }
+}
+@keyframes ember-squish {
+  0%   { transform: scale(var(--size)); }
+  22%  { transform: scale(calc(var(--size) * 1.26), calc(var(--size) * .68)); }
+  48%  { transform: scale(calc(var(--size) * .84), calc(var(--size) * 1.22)); }
+  72%  { transform: scale(calc(var(--size) * 1.08), calc(var(--size) * .93)); }
+  88%  { transform: scale(calc(var(--size) * .97), calc(var(--size) * 1.03)); }
+  100% { transform: scale(var(--size)); }
+}
+@keyframes ember-hop {
+  0%   { transform: translateY(0) scale(var(--size)); }
+  16%  { transform: translateY(0) scale(calc(var(--size) * 1.16), calc(var(--size) * .8)); }
+  44%  { transform: translateY(-10px) scale(calc(var(--size) * .9), calc(var(--size) * 1.16)); }
+  62%  { transform: translateY(-11px) scale(calc(var(--size) * .94), calc(var(--size) * 1.1)); }
+  82%  { transform: translateY(0) scale(calc(var(--size) * 1.14), calc(var(--size) * .84)); }
+  100% { transform: translateY(0) scale(var(--size)); }
+}
+@keyframes ember-giggle {
+  0%, 100% { transform: translateY(0) scale(var(--size)) rotate(0deg); }
+  14% { transform: translateY(-4px) scale(var(--size)) rotate(-5deg); }
+  30% { transform: translateY(0)    scale(calc(var(--size) * 1.06), calc(var(--size) * .94)) rotate(0deg); }
+  46% { transform: translateY(-5px) scale(var(--size)) rotate(5deg); }
+  62% { transform: translateY(0)    scale(calc(var(--size) * 1.06), calc(var(--size) * .94)) rotate(0deg); }
+  78% { transform: translateY(-3px) scale(var(--size)) rotate(-3deg); }
+}
+@keyframes ember-shake {
+  0%, 100% { transform: translateX(0) scale(var(--size)) rotate(0deg); }
+  12% { transform: translateX(-3px) scale(var(--size)) rotate(-4deg); }
+  30% { transform: translateX(3px)  scale(var(--size)) rotate(4deg); }
+  48% { transform: translateX(-2.4px) scale(var(--size)) rotate(-3deg); }
+  66% { transform: translateX(2px)  scale(var(--size)) rotate(2.4deg); }
+  84% { transform: translateX(-1px) scale(var(--size)) rotate(-1deg); }
+}
+@keyframes ember-sneeze {
+  0%   { transform: translateY(0) scale(var(--size)) rotate(0deg); }
+  /* the wind-up: back, small, gathering */
+  34%  { transform: translateY(2px) scale(calc(var(--size) * .82), calc(var(--size) * .9)) rotate(7deg); }
+  /* and out */
+  42%  { transform: translateY(-3px) scale(calc(var(--size) * 1.3), calc(var(--size) * 1.18)) rotate(-9deg); }
+  58%  { transform: translateY(0) scale(calc(var(--size) * .95)) rotate(3deg); }
+  78%  { transform: translateY(0) scale(calc(var(--size) * 1.04)) rotate(-1.5deg); }
+  100% { transform: translateY(0) scale(var(--size)) rotate(0deg); }
+}
+@keyframes ember-gasp {
+  0%   { transform: translateY(0) scale(var(--size)); }
+  26%  { transform: translateY(-4px) scale(calc(var(--size) * 1.2), calc(var(--size) * 1.24)); }
+  54%  { transform: translateY(-2px) scale(calc(var(--size) * 1.12), calc(var(--size) * 1.14)); }
+  100% { transform: translateY(0) scale(var(--size)); }
+}
+@keyframes ember-spin {
+  0%   { transform: scale(var(--size)) rotate(0deg); }
+  18%  { transform: scale(calc(var(--size) * 1.12), calc(var(--size) * .84)) rotate(0deg); }
+  70%  { transform: scale(calc(var(--size) * .96), calc(var(--size) * 1.08)) rotate(370deg); }
+  86%  { transform: scale(calc(var(--size) * 1.06), calc(var(--size) * .95)) rotate(357deg); }
+  100% { transform: scale(var(--size)) rotate(360deg); }
+}
+@keyframes ember-flip {
+  0%   { transform: translateY(0) scale(var(--size)) rotate(0deg); }
+  14%  { transform: translateY(2px) scale(calc(var(--size) * 1.18), calc(var(--size) * .78)) rotate(0deg); }
+  40%  { transform: translateY(-16px) scale(calc(var(--size) * .92), calc(var(--size) * 1.12)) rotate(-190deg); }
+  62%  { transform: translateY(-14px) scale(var(--size)) rotate(-300deg); }
+  84%  { transform: translateY(0) scale(calc(var(--size) * 1.16), calc(var(--size) * .82)) rotate(-360deg); }
+  100% { transform: translateY(0) scale(var(--size)) rotate(-360deg); }
+}
+@keyframes ember-dizzy {
+  0%   { transform: translate(0, 0) scale(var(--size)) rotate(0deg); }
+  15%  { transform: translate(-4px, -1px) scale(calc(var(--size) * 1.03)) rotate(-11deg); }
+  32%  { transform: translate(4px, 1px)  scale(calc(var(--size) * .97)) rotate(10deg); }
+  50%  { transform: translate(-3.5px, -1px) scale(calc(var(--size) * 1.02)) rotate(-9deg); }
+  68%  { transform: translate(3px, 1px)  scale(calc(var(--size) * .98)) rotate(7deg); }
+  84%  { transform: translate(-1.5px, 0) scale(var(--size)) rotate(-3deg); }
+  100% { transform: translate(0, 0) scale(var(--size)) rotate(0deg); }
+}
+@keyframes ember-cheer {
+  0%   { transform: translateY(0) scale(var(--size)) rotate(0deg); }
+  14%  { transform: translateY(2px) scale(calc(var(--size) * 1.22), calc(var(--size) * .74)) rotate(0deg); }
+  38%  { transform: translateY(-18px) scale(calc(var(--size) * .88), calc(var(--size) * 1.22)) rotate(-7deg); }
+  52%  { transform: translateY(-21px) scale(calc(var(--size) * 1.04)) rotate(7deg); }
+  74%  { transform: translateY(0) scale(calc(var(--size) * 1.2), calc(var(--size) * .8)) rotate(0deg); }
+  88%  { transform: translateY(-4px) scale(calc(var(--size) * .97), calc(var(--size) * 1.05)) rotate(0deg); }
+  100% { transform: translateY(0) scale(var(--size)) rotate(0deg); }
+}
+/* Fast out, a moment of hang, then gravity: the last stretch drops 46px while it fades. */
+@keyframes burst-fly {
+  0%   { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(.4); }
+  8%   { opacity: 1; }
+  62%  { opacity: 1; transform: translate(calc(var(--dx) * .86), var(--dy)) rotate(calc(var(--spin) * .7)) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 46px)) rotate(var(--spin)) scale(.8); }
+}
+@keyframes ember-perk {
+  0%   { transform: translateY(0) scale(var(--size)); }
+  34%  { transform: translateY(-3px) scale(calc(var(--size) * 1.09)); }
+  66%  { transform: translateY(0) scale(calc(var(--size) * .98)); }
+  100% { transform: translateY(0) scale(var(--size)); }
+}
+@keyframes ember-sway {
+  0%, 100% { transform: scale(var(--size)) rotate(0deg); }
+  30% { transform: scale(var(--size)) rotate(-4deg); }
+  66% { transform: scale(var(--size)) rotate(3deg); }
+}
+@keyframes ember-peek {
+  0%, 100% { transform: translateY(0) scale(var(--size)); }
+  45% { transform: translateY(-2px) scale(calc(var(--size) * 1.05), calc(var(--size) * 1.07)); }
+}
+
+/* ---- the face ---- */
+
+@keyframes ember-blink {
+  0%, 100% { transform: scaleY(1); }
+  20%      { transform: scaleY(.12); }
+  46%      { transform: scaleY(1); }
+}
+@keyframes ember-squint {
+  0%, 100% { transform: scaleY(1); }
+  40%      { transform: scaleY(.35); }
+}
+@keyframes ember-wide {
+  0%, 100% { transform: scale(1); }
+  30%      { transform: scale(1.32); }
+  62%      { transform: scale(1.12); }
+}
+@keyframes ember-glance {
+  0%, 100% { transform: translateX(0); }
+  40%      { transform: translateX(1.2px) scaleY(.9); }
+  70%      { transform: translateX(-.6px); }
+}
+/* Eyes pinched and drifting. Nobody draws dizzy any other way, and everybody reads it instantly. */
+@keyframes ember-cross {
+  0%, 100% { transform: scale(1); }
+  20% { transform: translateX(.8px) scale(.72, .9); }
+  50% { transform: translateX(-.6px) scale(.66, .86); }
+  80% { transform: translateX(.5px) scale(.74, .92); }
+}
+@keyframes mouth-gasp {
+  0%, 100% { opacity: 0; transform: scale(.2); }
+  26%      { opacity: .85; transform: scale(1.15); }
+  60%      { opacity: .8;  transform: scale(.95); }
+}
+@keyframes mouth-giggle {
+  0%, 100% { opacity: 0; transform: scale(.3, .2); }
+  20%      { opacity: .8; transform: scale(1, .6); }
+  50%      { opacity: .8; transform: scale(.8, .45); }
+  80%      { opacity: .7; transform: scale(1, .55); }
+}
+@keyframes cos-try {
+  0%   { opacity: 0; transform: translateY(-5px) scale(.85); }
+  60%  { opacity: var(--cos-op); transform: translateY(1px) scale(1.04); }
+  100% { opacity: var(--cos-op); transform: none; }
+}
+@keyframes ember-smoke {
+  0%   { opacity: 0; transform: translateY(0) scale(.5); }
+  25%  { opacity: .45; }
+  100% { opacity: 0; transform: translateY(-9px) scale(1.5); }
+}
+
+/* Cosmetics: palette tokens, so a hat stays legible on the light palette too. */
+.ember .cos-fill { fill: var(--fg-dim); }
+.ember .cos-dark { fill: color-mix(in srgb, var(--fg) 75%, var(--bg)); }
+.ember .cos-dot  { fill: var(--accent); }
+.ember .cos-line { stroke: var(--fg-dim); stroke-width: .5; fill: none; }
+.ember .scarf .cos-fill { fill: var(--accent); }
+.ember .laurel .cos-line { stroke: var(--pass); stroke-width: 1.2; }
+/* The dependent is too small to show a gradient and would only pick up banding from one, so it
+   takes the flat fire colour. More specific than the .flame rule above, which is the whole trick. */
+.ember .child .flame { fill: var(--fire); opacity: calc(0.35 + var(--heat) * 0.4); }
+
+/* Something you are trying on but do not own yet. Dimmed, because a preview that looks identical
+   to the real thing is a preview you will misread as a purchase you already made. */
+.ember .cos { --cos-op: 1; transform-origin: 12px 12px; }
+/* The drop-in animation ends on --cos-op rather than on 1, or a hat you cannot afford would flash
+   solid on its way down and then dim — which reads as the page correcting itself. */
+.ember .cos.ghost { --cos-op: .5; opacity: var(--cos-op); }
+
+/* @ember:end */
+
+/* ---------- the companion ----------
+ *
+ * The ember perches on the bottom-right corner of the editor with no container of its own — no
+ * bar, no card, no border. It costs the editor nothing: it is absolutely positioned and the
+ * wrapper is click-through, so only the creature itself and its panel take the mouse.
+ *
+ * Its numbers live in a pill that is invisible until you hover it. That is the whole point of the
+ * rewrite — heat and Sparks are things to be curious about, not a dashboard to work underneath.
+ */
+
+.ember-perch {
+  position: absolute;
+  right: 16px;
+  bottom: 2px;
+  z-index: 12;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;            /* the code underneath stays fully clickable */
+}
+.ember-perch > * { pointer-events: auto; }
+
+.ember-poke {
+  display: block;
+  padding: 0;
+  background: none;
+  border: 0;
+  line-height: 0;
+  cursor: pointer;
+  /* It is sitting on top of code, so it needs to be separable from it without a box: a shadow of
+     the page's own background does that and stays invisible against a flat surface. */
+  filter: drop-shadow(0 2px 5px var(--shadow));
+}
+.ember-poke:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 10px; }
+
+/* The Accepted burst, thrown from the middle of the ember. More specific than the rule above that
+   hands pointer events back to the perch's children: twenty-two flying sparks must never steal the
+   click you were aiming at the code underneath them. Invisible unless animated, so with reduced
+   motion asked for there is simply nothing to see. */
+.ember-perch > .burst {
+  position: absolute;
+  right: 18px; bottom: 22px;
+  width: 0; height: 0;
+  pointer-events: none;
+}
+.burst .bit {
+  position: absolute; left: -3px; top: -3px;
+  width: 6px; height: 6px;
+  border-radius: 1.5px;
+  opacity: 0;
+}
+.burst .bit.b0 { background: var(--accent); }
+.burst .bit.b1 { background: var(--pass); border-radius: 50%; }
+.burst .bit.b2 { background: var(--warn); width: 4px; height: 9px; }
+.burst .bit.b3 { background: color-mix(in srgb, var(--accent) 50%, var(--fg)); width: 5px; height: 5px; border-radius: 50%; }
+
+/* A cold ember wants noticing. Slow enough not to nag, and only when there is actually a problem. */
+@media (prefers-reduced-motion: no-preference) {
+  .ember-perch[data-state="cold"] .ember-poke { animation: perch-nudge 6s ease-in-out infinite; }
+}
+@keyframes perch-nudge {
+  0%, 86%, 100% { transform: translateX(0) rotate(0deg); }
+  90% { transform: translateX(-1.5px) rotate(-3deg); }
+  94% { transform: translateX(1.5px) rotate(3deg); }
+}
+
+.ember-panel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  padding: 5px 6px 5px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-2);
+  box-shadow: 0 8px 22px var(--shadow);
+  font-size: 12px;
+  color: var(--fg-dim);
+  white-space: nowrap;
+
+  opacity: 0;
+  transform: translateX(10px) scale(.96);
+  transform-origin: right center;
+  pointer-events: none;
+  transition: opacity .16s ease, transform .16s ease;
+}
+/* Hover to peek, click to pin, and an open fuel menu holds it regardless. */
+.ember-perch:hover .ember-panel,
+.ember-perch:focus-within .ember-panel,
+.ember-perch.pinned .ember-panel,
+.ember-perch.menu-open .ember-panel {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.ember-panel .mood { max-width: 230px; overflow: hidden; text-overflow: ellipsis; }
+.ember-perch[data-state="cold"] .mood,
+.ember-perch[data-state="guttering"] .mood { color: var(--warn); }
+
+.heat-bar {
+  width: 72px; height: 5px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--bg-3);
+  overflow: hidden;
+}
+.heat-bar i {
+  display: block; height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width .45s ease, background .45s ease;
+}
+.ember-perch[data-state="guttering"] .heat-bar i { background: var(--warn); }
+.ember-perch[data-state="cold"] .heat-bar i { background: var(--fail); }
+
+.sparks-count { display: inline-flex; align-items: center; gap: 3px; color: var(--fg); }
+.sparks-count .bolt { color: var(--accent); font-style: normal; }
+
+.feed-btn { padding: 3px 10px; font-size: 12px; }
+
+/* ---------- the fuel shop ---------- */
+
+.shop { position: relative; }
+.shop-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  width: 300px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 6px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: 0 10px 30px var(--shadow);
+}
+/* The companion sits at the foot of the editor, so its menu opens upward; the hearth is near the
+   top of the page, where upward would open off-screen. */
+.hearth .shop-menu { top: calc(100% + 8px); bottom: auto; }
+
+.shop-head {
+  display: flex; justify-content: space-between;
+  padding: 4px 8px 8px;
+  border-bottom: 1px solid var(--line-soft);
+  margin-bottom: 4px;
+  color: var(--fg);
+}
+.shop-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  text-align: left;
+  cursor: pointer;
+}
+.shop-row:hover { background: var(--bg-3); border-color: var(--line); }
+.shop-name { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.shop-name b { font-size: 12.5px; font-weight: 600; color: var(--fg); }
+.shop-name span { font-size: 11px; color: var(--fg-faint); line-height: 1.35; }
+.shop-cost { flex: none; color: var(--accent); font-size: 12px; }
+
+/* Off the shelf, or out of reach. Shown rather than hidden — knowing Garbage exists, and why you
+   cannot have it yet, beats a list that quietly changes shape behind your back. */
+.shop-row.gone, .shop-row.poor { opacity: .42; }
+.shop-row.gone { cursor: not-allowed; }
+.shop-row.gone .shop-cost { color: var(--fg-faint); }
+
+/* ---------- the hearth ---------- */
+
+.hearth {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.hearth-pet {
+  flex: none;
+  width: 104px; height: 104px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* The glow of the fire on the wall behind it, which goes out with the fire. */
+  background: radial-gradient(circle at 50% 62%,
+              color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%);
+}
+.hearth[data-state="cold"] .hearth-pet { background: none; }
+.hearth-pet:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.hearth-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.hearth-top { display: flex; align-items: baseline; gap: 10px; }
+.hearth-top b { font-size: 16px; color: var(--fg); cursor: pointer; }
+.hearth-top b:hover { color: var(--accent); }
+.hearth-top .sparks-count { margin-left: auto; font-size: 13px; }
+.hearth-sub { font-size: 12.5px; color: var(--fg-dim); }
+.hearth[data-state="cold"] .hearth-sub,
+.hearth[data-state="guttering"] .hearth-sub { color: var(--warn); }
+
+.hearth-meter {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-3);
+  overflow: hidden;
+  max-width: 320px;
+}
+.hearth-meter i {
+  display: block; height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width .5s ease;
+}
+.hearth[data-state="guttering"] .hearth-meter i { background: var(--warn); }
+.hearth[data-state="cold"] .hearth-meter i { background: var(--fail); }
+
+.wares { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
+.ware {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-faint);
+  cursor: pointer;
+}
+.ware:hover { border-color: var(--hover-line); color: var(--fg-dim); }
+.ware-cost { color: var(--accent); }
+/* Owned but not worn: full colour, no price. Worn: ringed. */
+.ware.owned { color: var(--fg-dim); }
+.ware.on { border-color: var(--accent); color: var(--fg); background: var(--tint-accent); }
+.ware.maxed { opacity: .5; cursor: default; }
+
+@media (max-width: 700px) {
+  .hearth { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------- heatmap ----------
+ *
+ * Four fixed levels mixed from --accent over --bg-2, so the grid reads correctly on the light
+ * palette too: on Paper the mix darkens instead of lightening, because every step is relative to
+ * the surface rather than to black.
+ */
+
+.heat-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px 10px;
+  margin-bottom: 20px;
+}
+/* A year does not fit on a narrow window; scroll the grid, never the page. */
+.heat-scroll { overflow-x: auto; padding-bottom: 4px; }
+
+.heat-cell    { fill: var(--bg-3); }
+.heat-cell.l1 { fill: color-mix(in srgb, var(--accent) 28%, var(--bg-3)); }
+.heat-cell.l2 { fill: color-mix(in srgb, var(--accent) 52%, var(--bg-3)); }
+.heat-cell.l3 { fill: color-mix(in srgb, var(--accent) 76%, var(--bg-3)); }
+.heat-cell.l4 { fill: var(--accent); }
+.heat-cell.today { stroke: var(--fg-dim); stroke-width: 1.2; }
+.heat-label { fill: var(--fg-faint); }
+
+.heat-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--fg-dim);
+}
+
+/* ---------- streak chip ---------- */
+
+.streak-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--tint-accent);
+  font-size: 12.5px;
+  color: var(--fg);
+  cursor: default;
+  user-select: none;
+}
+.streak-chip .flame { color: var(--accent); font-size: 10px; line-height: 1; }
+.streak-chip b { font-weight: 600; }
+
+/* Nothing logged today yet. Dimmed rather than red — it is a reminder, not a telling-off. */
+.streak-chip.pending { background: transparent; color: var(--fg-dim); }
+.streak-chip.pending .flame { color: var(--fg-faint); }
+
+/* ---------- library ---------- */
+
+.import-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 28px;
+}
+.import-card .row { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; }
+.import-card textarea { min-height: 130px; }
+
+.hint {
+  color: var(--fg-faint);
+  font-size: 12.5px;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+/* The problem table. A grid per row rather than a <table>, so a whole row can be one link — click
+   anywhere on it — without a click handler standing in for an anchor. */
+.library { margin-top: 26px; }
+.library-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.library-head h2 { margin: 0; }
+.table-count { font-size: 12.5px; }
+
+.ptable-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 10px; }
+.ptable-tools .search { flex: 1 1 220px; max-width: 320px; padding: 7px 11px; font-size: 13px; }
+
+.ptable {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--bg-2);
+  overflow: hidden;
+}
+.ptable-head, .prow {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 2.3fr) minmax(0, 1.5fr) 84px 92px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+}
+.ptable-head.with-best, .prow.with-best {
+  grid-template-columns: 26px minmax(0, 2.2fr) minmax(0, 1.3fr) 84px 92px 78px;
+}
+.ptable-head { min-height: 36px; border-bottom: 1px solid var(--line); }
+.ph {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 0; border: 0; background: none;
+  font-size: 10.5px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--fg-faint);
+}
+button.ph:hover { background: none; color: var(--fg-dim); }
+.ph.num { justify-content: flex-end; }
+.ph.sorted { color: var(--fg); }
+.ph .sort-mark { font-size: 11px; color: var(--accent); }
+
+.prow {
+  min-height: 42px;
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-soft);
+}
+.prow:last-child { border-bottom: 0; }
+/* Zebra, as faint as it can be and still be there: a long table is read along its rows. */
+.prow:nth-child(even) { background: color-mix(in srgb, var(--fg) 2.5%, transparent); }
+.prow:hover { background: var(--hover); }
+.prow:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.pstatus { font-weight: 700; text-align: center; font-size: 13px; }
+.pstatus.solved { color: var(--pass); }
+.pstatus.attempted { color: var(--warn); }
+.ptitle { font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ptags { color: var(--fg-faint); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pnum { text-align: right; font: 12.5px var(--mono); color: var(--fg-dim); white-space: nowrap; }
+
+@media (max-width: 760px) {
+  .ptable-head, .prow, .ptable-head.with-best, .prow.with-best {
+    grid-template-columns: 22px minmax(0, 1fr) 76px 64px;
+  }
+  .ph.tags, .ptags, .ptable-head.with-best > :last-child, .prow.with-best > :last-child { display: none; }
+}
+
+/* Once there is a table, pasting is the thing you do least, so it folds away beneath it. */
+.import-fold { margin-top: 18px; }
+.import-fold > summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-block;
+  padding: 6px 2px;
+  color: var(--fg-dim);
+  font-size: 13px;
+}
+.import-fold > summary::-webkit-details-marker { display: none; }
+.import-fold > summary:hover { color: var(--fg); }
+.import-fold[open] > summary { margin-bottom: 8px; }
+
+.diff { font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.diff.Easy   { color: var(--pass); background: var(--tint-pass); }
+.diff.Medium { color: var(--warn); background: var(--tint-warn); }
+.diff.Hard   { color: var(--fail); background: var(--tint-fail); }
+.diff.none   { color: var(--fg-faint); background: var(--veil); }
+
+.verdict-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); flex: none; }
+.verdict-dot.PASS { background: var(--pass); }
+.verdict-dot.FAIL { background: var(--fail); }
+
+/* ---------- solve view ---------- */
+
+.solve {
+  display: grid;
+  /* Middle track is the drag handle; --statement-w is what the splitter writes. */
+  grid-template-columns: var(--statement-w, minmax(260px, 1fr)) 6px minmax(420px, 1.6fr);
+  height: 100%;
+  overflow: hidden;
+}
+
+.pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+
+
+.pane-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+  flex: none;
+  min-height: 42px;
+}
+.pane-head h3 { margin: 0; }
+.pane-body { flex: 1; overflow: auto; min-height: 0; }
+
+.statement {
+  padding: 16px 18px;
+  line-height: 1.6;
+  color: var(--fg-dim);
+  font-size: 13.5px;
+  word-wrap: break-word;
+}
+
+/* Only a pasted statement is plain text and needs its newlines honoured. An imported one is
+   pretty-printed HTML, where `pre-wrap` would render the gap between every pair of tags. */
+.statement.plain { white-space: pre-wrap; }
+
+.statement > :first-child { margin-top: 0; }
+.statement > :last-child  { margin-bottom: 0; }
+.statement p, .statement ul, .statement ol { margin: 0 0 10px; }
+.statement ul, .statement ol { padding-left: 20px; }
+.statement li { margin: 3px 0; }
+.statement br { line-height: 0; }
+
+/* Example headings ride in on a paragraph of their own; the gap above them is what separates one
+   example from the last. */
+.statement .example { display: inline-block; margin-top: 4px; color: var(--fg); }
+
+.statement strong, .statement b { color: var(--fg); }
+.statement code {
+  font: 12.5px var(--mono);
+  background: var(--bg-3);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--fg);
+}
+.statement pre {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  margin: 0 0 12px;
+  padding: 9px 11px;
+  font: 12.5px/1.55 var(--mono);
+  /* Wrap rather than scroll: the Explanation line is prose and runs long, and a horizontal
+     scrollbar hides the half of it that says why the answer is the answer. */
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.statement pre code { background: none; padding: 0; }
+
+/* The diagrams, hotlinked from LeetCode and never copied here.
+ *
+ * They are black line art drawn for a white page, so on six of the seven palettes they would be
+ * invisible ink. The white ground is therefore not a style choice -- it is the background the
+ * picture was drawn against, and putting it back is the only way the picture survives a dark
+ * theme. The cap on width is what keeps LeetCode's 613px-wide grids from shoving the pane sideways.
+ */
+.statement img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 10px 0 12px;
+  padding: 8px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.img-missing {
+  display: inline-block;
+  margin: 8px 0 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px dashed var(--line);
+  color: var(--fg-faint);
+  font-size: 12px;
+}
+
+.editor-wrap { flex: 1; min-height: 0; position: relative; }
+
+/* ---------- test panel ---------- */
+
+.tests {
+  flex: none;
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+  display: flex;
+  flex-direction: column;
+  /* A definite height, not a max-height. The body below is `flex: 1 1 0`, and in a column sized by
+     its content a zero-basis child contributes nothing — the cases would collapse to no height at
+     all. The row splitter overwrites this with pixels when you drag it. */
+  height: 42%;
+  min-height: 190px;
+  /* No z-index, overflow or transform here, ever: the ember perches on the editor's corner just
+     above this panel, and any of those would bury it or clip it. */
+}
+.tests-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.tests-body { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 10px 12px 12px; }
+
+/* The bar under the console: Debug, Run, Submit. Always visible however short the console is
+   dragged, because the body above it is the part that scrolls. */
+.console-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.console-bar button { padding: 5px 14px; }
+.console-hint { font-size: 11.5px; color: var(--fg-faint); white-space: nowrap; overflow: hidden; }
+.console-hint kbd { font-size: 10.5px; }
+
+.tab-badge {
+  font-size: 10.5px; font-weight: 700;
+  padding: 0 6px; border-radius: 999px; line-height: 16px;
+}
+.tab-badge.pass { color: var(--pass); background: var(--tint-pass); }
+.tab-badge.fail { color: var(--fail); background: var(--tint-fail); }
+
+/* Case chips: one per case, a dot for how it last went, an x to remove the selected one. */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-soft);
+  background: var(--bg);
+  color: var(--fg-dim);
+}
+.chip:hover { border-color: var(--hover-line); color: var(--fg); background: var(--bg); }
+.chip.active { border-color: var(--accent-dim); background: var(--tint-accent); color: var(--fg); }
+.chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+.chip .dot.PASS { background: var(--pass); }
+.chip .dot.NEAR_MISS { background: var(--warn); }
+.chip .dot.FAIL, .chip .dot.ERROR, .chip .dot.TIMEOUT { background: var(--fail); }
+.chip.add { padding: 3px 9px; font-weight: 700; color: var(--fg-faint); }
+.chip-x {
+  margin: 0 -4px 0 0;
+  width: 15px; height: 15px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 13px; line-height: 1;
+  color: var(--fg-faint);
+}
+.chip-x:hover { background: var(--tint-fail); color: var(--fail); }
+
+.case-body { display: grid; gap: 10px; }
+.field textarea.short { min-height: 36px; }
+
+select.compact { width: auto; padding: 4px 8px; font-size: 12px; }
+
+/* An empty state that says what would be here and how to get it there. */
+.empty-note {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 18px;
+  color: var(--fg-faint);
+  font-size: 13px;
+}
+.empty-note b { color: var(--fg-dim); font-weight: 600; }
+
+/* ---------- the verdict card ---------- */
+
+.verdict-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--bg);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.verdict-card.pass { border-color: var(--edge-pass); background: color-mix(in srgb, var(--pass) 5%, var(--bg)); }
+.verdict-card.fail { border-color: var(--edge-fail); }
+.verdict-top { display: flex; align-items: baseline; gap: 12px; }
+.verdict-title { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.verdict-card.pass .verdict-title, .verdict-title.pass { color: var(--pass); }
+.verdict-card.fail .verdict-title, .verdict-title.fail { color: var(--fail); }
+/* The compile error's title stands alone above the diagnostics, with no card around it. */
+.result-panel > .verdict-title { margin: 2px 0 10px; }
+.verdict-pay { margin-left: auto; font-weight: 700; color: var(--accent); white-space: nowrap; }
+.verdict-pay.muted { font-weight: 500; font-size: 12px; color: var(--fg-faint); }
+.verdict-sub { margin-top: 4px; font-size: 12.5px; color: var(--fg-dim); display: flex; flex-wrap: wrap; gap: 8px; }
+.verdict-sub b { color: var(--fg); font-weight: 650; }
+.dotsep { color: var(--fg-faint); }
+
+/* Per-case runtime: as tall as it was slow. */
+.ms-bars {
+  display: flex; align-items: flex-end; gap: 3px;
+  height: 30px; margin-top: 10px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.ms-bars i {
+  flex: 1; min-width: 3px; max-width: 22px;
+  height: var(--h);
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in srgb, var(--pass) 55%, transparent);
+}
+.ms-bars i.bad { background: color-mix(in srgb, var(--fail) 65%, transparent); }
+
+/* ---------- the left pane: description and attempts ---------- */
+
+.statement-head { padding: 16px 18px 0; }
+.statement-head h2 { margin: 0 0 8px; font-size: 18px; letter-spacing: -0.015em; color: var(--fg); }
+.statement-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.topic-tag {
+  font-size: 11.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--veil);
+  color: var(--fg-dim);
+}
+.desc-panel .statement { padding-top: 14px; }
+
+.attempts-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 12.5px;
+}
+.filter-chips { display: flex; gap: 4px; }
+.fchip {
+  font-size: 11.5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line-soft);
+  background: transparent;
+  color: var(--fg-dim);
+}
+.fchip.on { border-color: var(--accent-dim); background: var(--tint-accent); color: var(--fg); }
+
+.attempts { display: flex; flex-direction: column; }
+.attempt {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 46px 64px 78px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 12.5px;
+}
+.attempt:hover { background: var(--hover); }
+.mode-badge {
+  justify-self: start;
+  font: 650 10px/16px var(--sans);
+  letter-spacing: .06em;
+  padding: 0 6px;
+  border-radius: 4px;
+  color: var(--fg-faint);
+  border: 1px solid var(--line);
+}
+.mode-badge.submit { color: var(--accent); border-color: var(--accent-dim); }
+.attempt-verdict { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attempt-verdict.pass { color: var(--pass); }
+.attempt-verdict.fail { color: var(--fail); }
+.attempt-verdict.muted { color: var(--fg-faint); font-weight: 500; }
+.attempt-cases, .attempt-ms { color: var(--fg-dim); font: 12px var(--mono); text-align: right; }
+.attempt-when { color: var(--fg-faint); text-align: right; white-space: nowrap; }
+
+.tabs { display: flex; gap: 4px; overflow-x: auto; }
+.tab {
+  font-size: 12.5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--fg-dim);
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tab:hover { background: var(--bg-3); }
+.tab.active { background: var(--bg-3); border-color: var(--line); color: var(--fg); }
+.tab .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+.tab .dot.PASS { background: var(--pass); }
+.tab .dot.NEAR_MISS { background: var(--warn); }
+.tab .dot.FAIL, .tab .dot.ERROR, .tab .dot.TIMEOUT { background: var(--fail); }
+
+.case-grid { display: grid; gap: 10px; }
+.field label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--fg-faint);
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+.field textarea { min-height: 54px; }
+
+.result-box {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  background: var(--bg);
+  font: 12.5px/1.6 var(--mono);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.result-box.pass { border-color: var(--edge-pass); }
+.result-box.fail { border-color: var(--edge-fail); }
+
+.verdict-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 650;
+  margin-bottom: 8px;
+}
+.verdict-line.pass { color: var(--pass); }
+.verdict-line.fail { color: var(--fail); }
+.verdict-line .ms { color: var(--fg-faint); font-weight: 400; font-size: 12px; }
+
+.diff-row { display: grid; grid-template-columns: 76px 1fr; gap: 8px; margin-top: 4px; }
+.diff-row .k { color: var(--fg-faint); }
+.diff-row .v.bad { color: var(--fail); }
+.diff-row .v.good { color: var(--pass); }
+
+.note {
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: var(--tint-warn);
+  border: 1px solid var(--edge-warn);
+  color: var(--warn);
+  font: 12.5px var(--sans);
+}
+
+.compile-errors {
+  border: 1px solid var(--edge-fail);
+  border-radius: var(--r);
+  background: var(--tint-fail);
+  padding: 10px 12px;
+  font: 12.5px/1.7 var(--mono);
+  color: var(--fail-fg);
+  white-space: pre-wrap;
+}
+.compile-errors .loc { color: var(--fail); font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+/* ---------- timeline ---------- */
+
+/* Flex, not grid: the number of banners varies (0, 1 or 2), so a fixed row template would
+   hand the spare space to whichever child happened to land on the 1fr row. */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scrubber {
+  flex: none;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.scrub-controls { display: flex; align-items: center; gap: 10px; }
+.scrub-controls .step-label {
+  font: 12.5px var(--mono);
+  color: var(--fg-dim);
+  min-width: 150px;
+}
+.scrub-controls .step-label b { color: var(--fg); }
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--bg-3);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-2);
+  cursor: grab;
+}
+input[type=range]::-moz-range-thumb {
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-2);
+  cursor: grab;
+}
+
+.timeline-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--code-w, 1.35fr) 6px 1fr;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* The debug view's code pane is a real editor — the whole point of finding a bug is fixing it, and
+   walking back to the other screen to type one character was the wrong shape. */
+/* Flex, not grid: the stale bar spends most of its life hidden, and a `display:none` child is not
+   a grid item — so with `grid-template-rows: auto 1fr` the editor would slide up into the `auto`
+   row and collapse to the height of its own unlaid-out content. */
+.code-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+.code-view { flex: 1; min-height: 0; overflow: hidden; }
+
+/* Where the run is standing, and every line it ever reached. */
+.trace-current-line   { background: var(--tint-accent); }
+.trace-current-gutter { border-left: 3px solid var(--accent); }
+.trace-visited-gutter { border-left: 3px solid color-mix(in srgb, var(--info) 55%, transparent); }
+
+/* The moment you type, those marks point at code that no longer exists. Drain the colour out of
+   them rather than letting them keep asserting something that stopped being true. */
+.code-pane.stale .trace-current-line   { background: var(--veil); }
+.code-pane.stale .trace-current-gutter { border-left-color: var(--fg-faint); }
+.code-pane.stale .trace-visited-gutter {
+  border-left-color: color-mix(in srgb, var(--fg-faint) 45%, transparent);
+}
+
+/* An author `display` beats the user-agent's `[hidden] { display: none }` at equal specificity, so
+   hiding it needs saying here or the bar shows up before you have typed anything. */
+.stale-bar[hidden] { display: none; }
+.stale-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  color: var(--fg-dim);
+  background: var(--tint-warn);
+  border-bottom: 1px solid var(--edge-warn);
+}
+.stale-bar b { color: var(--fg); font-weight: 600; }
+.stale-bar .grow { flex: 1; }
+.stale-bar button { font-size: 12px; padding: 3px 10px; }
+
+/* Structure diagrams are styled, not painted: switching palette while a trace is open recolours
+   the list and the tree along with everything else. */
+.viz .node  { fill: var(--bg-3); stroke: var(--line); }
+.viz .ring  { stroke: var(--info); }
+.viz .link  { stroke: var(--info); stroke-width: 1.5; }
+.viz .edge  { stroke: var(--line); stroke-width: 1.5; }
+.viz text   { fill: var(--fg); }
+.viz .cycle { fill: var(--fail); }
+
+.inspector {
+  overflow-y: auto;
+  min-height: 0;
+  background: var(--bg-2);
+}
+.inspector section { border-bottom: 1px solid var(--line-soft); padding: 13px 16px; }
+.inspector h3 { margin-bottom: 9px; }
+
+.var-row {
+  display: grid;
+  grid-template-columns: minmax(60px, auto) 1fr;
+  gap: 10px;
+  padding: 4px 0;
+  font: 12.5px/1.55 var(--mono);
+  align-items: baseline;
+}
+.var-row .n { color: var(--info); }
+.var-row .v { color: var(--fg); word-break: break-all; white-space: pre-wrap; }
+.var-row.changed .v { color: var(--changed); font-weight: 600; }
+.var-row.changed .n::after { content: "•"; color: var(--changed); margin-left: 5px; }
+
+.stack-row {
+  font: 12.5px var(--mono);
+  padding: 3px 0;
+  color: var(--fg-dim);
+}
+.stack-row.top { color: var(--fg); }
+.stack-row .ln { color: var(--fg-faint); }
+
+.viz { padding: 6px 0; overflow-x: auto; }
+.viz svg { display: block; }
+.viz-label {
+  font: 11px var(--mono);
+  color: var(--info);
+  margin: 8px 0 2px;
+}
+.matrix {
+  border-collapse: collapse;
+  font: 11.5px var(--mono);
+}
+.matrix td {
+  border: 1px solid var(--line);
+  padding: 3px 7px;
+  text-align: right;
+  color: var(--fg-dim);
+  min-width: 26px;
+}
+
+.banner {
+  flex: none;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  background: var(--tint-warn);
+  border-bottom: 1px solid var(--edge-warn);
+  color: var(--warn);
+}
+.banner.error {
+  background: var(--tint-fail);
+  border-color: var(--edge-fail);
+  color: var(--fail-fg);
+}
+
+/* ---------- toast ---------- */
+
+.toast-host {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+  pointer-events: none;
+}
+.toast {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 9px 16px;
+  font-size: 13px;
+  box-shadow: 0 8px 28px var(--shadow);
+  animation: rise .18s ease-out;
+}
+.toast.err { border-color: var(--edge-fail); color: var(--fail-fg); }
+.toast.ok  { border-color: var(--edge-pass); color: var(--pass); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---------- misc ---------- */
+
+.row-gap { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.muted { color: var(--fg-faint); }
+.mono { font-family: var(--mono); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--fg) 20%, var(--bg)); border-radius: 6px; border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--fg) 32%, var(--bg)); }
+
+@media (max-width: 900px) {
+  .solve { grid-template-columns: 1fr; }
+  .timeline-body { grid-template-columns: 1fr; }
+}
+
+.signature {
+  font: 12px var(--mono);
+  color: var(--fg-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40%;
+}
+
+/* ---------- splitters ---------- */
+
+.splitter {
+  position: relative;
+  flex: none;
+  z-index: 6;
+  background: transparent;
+  touch-action: none;          /* pointer events only; no scroll-gesture hijacking */
+}
+.splitter.col { cursor: col-resize; width: 6px; }
+.splitter.row { cursor: row-resize; height: 6px; }
+
+/* Thin visible line, generous hit area. */
+.splitter::after {
+  content: "";
+  position: absolute;
+  background: var(--line);
+  transition: background .12s;
+}
+.splitter.col::after { top: 0; bottom: 0; left: 2px; right: 2px; }
+.splitter.row::after { left: 0; right: 0; top: 2px; bottom: 2px; }
+
+.splitter:hover::after,
+.splitter.dragging::after { background: var(--accent); }
+
+/* Grip dots, shown on hover so the divider reads as draggable. */
+.splitter::before {
+  content: "";
+  position: absolute;
+  opacity: 0;
+  transition: opacity .12s;
+  background: var(--bg);
+  border-radius: 3px;
+}
+.splitter.col::before { left: 0; right: 0; top: 50%; height: 26px; margin-top: -13px;
+  background: var(--accent); }
+.splitter.row::before { top: 0; bottom: 0; left: 50%; width: 26px; margin-left: -13px;
+  background: var(--accent); }
+.splitter:hover::before, .splitter.dragging::before { opacity: 1; }
+
+/* Keep the cursor steady and stop text selecting while a drag sweeps across other panes. */
+body.dragging-col, body.dragging-col * { cursor: col-resize !important; user-select: none !important; }
+body.dragging-row, body.dragging-row * { cursor: row-resize !important; user-select: none !important; }
+
+/* ---------- captured expected values ---------- */
+
+.captured-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font: 10.5px var(--sans);
+  font-weight: 600;
+  letter-spacing: .02em;
+  text-transform: none;
+  color: var(--warn);
+  background: var(--tint-warn);
+  border: 1px solid var(--edge-warn);
+}
+
+.capture-btn {
+  font-size: 11.5px;
+  padding: 2px 8px;
+  margin-left: auto;
+}
+
+.field-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.field-head label { margin-bottom: 0; }
+
+
+/* ---------- the help sheet ---------- */
+
+.veil {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(3px);
+}
+.sheet {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 18px 22px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-2);
+  box-shadow: 0 24px 60px var(--shadow);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sheet { animation: sheet-in .16s cubic-bezier(.2, .8, .3, 1); }
+}
+@keyframes sheet-in { from { opacity: 0; transform: translateY(6px) scale(.99); } }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.sheet h2 { margin: 0; font-size: 16px; }
+.sheet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px 28px; }
+.sheet h3 { margin: 14px 0 8px; }
+.keys { display: grid; grid-template-columns: max-content 1fr; gap: 7px 12px; margin: 0; align-items: center; }
+.keys dt { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+.keys dd { margin: 0; color: var(--fg-dim); font-size: 12.5px; }
+.keys .plus { color: var(--fg-faint); font-size: 10px; }
+.sheet-about { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
+.sheet-about h2 { margin-bottom: 8px; }
+.about-body p { margin: 0 0 9px; color: var(--fg-dim); font-size: 13px; line-height: 1.6; }
+.about-body b { color: var(--fg); }
+.about-body .fine { font-size: 11.5px; color: var(--fg-faint); }
+.path-row { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+.path {
+  flex: 1; min-width: 0;
+  padding: 6px 9px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  font: 12px var(--mono);
+  color: var(--fg);
+  overflow-x: auto; white-space: nowrap;
+}
+.mini-btn { padding: 4px 10px; font-size: 12px; }
+
+/* ---------- the server has stopped ---------- */
+
+.offline-bar {
+  position: fixed; left: 50%; bottom: 18px; z-index: 90;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--edge-warn);
+  background: color-mix(in srgb, var(--warn) 12%, var(--bg-2));
+  box-shadow: 0 10px 30px var(--shadow);
+  color: var(--fg);
+  font-size: 13px;
+}
+.offline-bar b { color: var(--warn); }
+
+/* ---------- first run ---------- */
+
+.welcome {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin: 4px 0 22px;
+}
+.welcome-step {
+  padding: 14px 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  background: var(--bg-2);
+}
+.welcome-step .n {
+  display: inline-grid; place-items: center;
+  width: 22px; height: 22px; margin-bottom: 8px;
+  border-radius: 50%;
+  background: var(--tint-accent);
+  color: var(--accent);
+  font-size: 12px; font-weight: 700;
+}
+.welcome-step b { display: block; margin-bottom: 4px; font-size: 13.5px; }
+.welcome-step span { color: var(--fg-dim); font-size: 12.5px; line-height: 1.55; }
